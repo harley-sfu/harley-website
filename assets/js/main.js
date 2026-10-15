@@ -61,14 +61,25 @@
   document.addEventListener('scroll', hideTip, { passive: true });
 
   /* ---------------- chrome: theme, top bar, links ---------------- */
+  // Light and dark: follows the system until the reader picks one; the pick is remembered.
   var root = document.documentElement;
-  document.querySelector('.theme-toggle').addEventListener('click', function () {
-    var cur = root.getAttribute('data-theme') ||
-      (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
-    var next = cur === 'dark' ? 'light' : 'dark';
-    root.setAttribute('data-theme', next);
-    store('harley-theme', next);
+  var systemDark = window.matchMedia('(prefers-color-scheme: dark)');
+  var themeButtons = document.querySelectorAll('[data-set-theme]');
+  function currentTheme() { return root.getAttribute('data-theme') || (systemDark.matches ? 'dark' : 'light'); }
+  function syncThemeButtons() {
+    var cur = currentTheme();
+    themeButtons.forEach(function (b) { b.setAttribute('aria-pressed', String(b.getAttribute('data-set-theme') === cur)); });
+  }
+  themeButtons.forEach(function (b) {
+    b.addEventListener('click', function () {
+      var t = b.getAttribute('data-set-theme');
+      root.setAttribute('data-theme', t);
+      store('harley-theme', t);
+      syncThemeButtons();
+    });
   });
+  if (systemDark.addEventListener) systemDark.addEventListener('change', syncThemeButtons);
+  syncThemeButtons();
   var topbar = document.querySelector('.topbar');
   function onScrollBar() { topbar.classList.toggle('scrolled', window.scrollY > 8); }
   window.addEventListener('scroll', onScrollBar, { passive: true }); onScrollBar();

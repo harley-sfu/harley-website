@@ -12,6 +12,8 @@ python3 -m http.server 8765
 
 Then open http://localhost:8765.
 
+**Light and dark mode.** The page follows the system setting. The sun/moon switch in the top-right corner overrides it, and the choice is remembered in that browser (`localStorage`, key `harley-theme`).
+
 ## Page sections
 
 | Section | Shows | Source |
