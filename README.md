@@ -14,6 +14,10 @@ Then open http://localhost:8765.
 
 **Light and dark mode.** The page follows the system setting. The sun/moon switch in the top-right corner overrides it, and the choice is remembered in that browser (`localStorage`, key `harley-theme`). Light mode uses an aged-paper palette rather than white, so it doesn't glare.
 
+**Links to one set, prompt or model.** `#set=814` opens a set, `#set=814&v=T` also brings that prompt into view and flashes it (`v` is T, A, P, S, H or J), and `#model=kimi-k3` highlights a model in sections I and II and pins its card in section III. Picking a tab writes `#set=…` into the address bar, each prompt has a *Copy link* button (shown on hover), and the model names in section I are links. These are `#` links, so a shared link shows the page's own preview card, not one per set.
+
+**Without a mouse.** Each outcome grid is one tab stop: arrow keys step through the responses (left/right: model, up/down: sample), and a tap snaps to the nearest dot. Dumbbell rows can be focused and tapped too, and their values are read out to screen readers.
+
 **One Piece touches in the charts.** Each one is a working part of a chart, so readers who don't know the series lose nothing:
 - *Biblo wakes up.* The owl in the top bar dozes, and opens its eyes while a model's answer is showing (`assets/img/owl-awake.png`, the same drawing with the eyes redrawn).
 - *Poneglyph reading.* Pressing *Translate* first shows the English carved in Poneglyph glyphs, then reads it out word by word; switching back carves it again before the original script returns. Each carved word is sized to the width of the real word, so lines never reflow. The font is `assets/fonts/poneglyph.woff2`.

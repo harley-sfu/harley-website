@@ -58,7 +58,13 @@
     tip.style.left = left + 'px'; tip.style.top = top + 'px';
   }
   function hideTip() { tip.hidden = true; }
+  function tipFor(node, html) { var r = node.getBoundingClientRect(); showTip(html, r.left + r.width / 2, r.top); }
   document.addEventListener('scroll', hideTip, { passive: true });
+  document.addEventListener('click', hideTip);
+  // what the tooltip shows, read out for keyboard and screen-reader users
+  var live = el('div', { class: 'sr-only', 'aria-live': 'polite' }, document.body);
+  function say(text) { live.textContent = text; }
+  var hooks = {};
 
   /* ---------------- chrome: theme, top bar, links ---------------- */
   // Light and dark: follows the system until the reader picks one; the pick is remembered.
@@ -202,7 +208,7 @@
       var b = el('button', { class: 'tab', role: 'tab', type: 'button', lang: ex.lang, 'aria-selected': i === 0 ? 'true' : 'false' }, tabsHost);
       el('span', { class: 'tab-script', text: ex.tab }, b);
       el('span', { class: 'tab-title', text: ex.title }, b);
-      b.addEventListener('click', function () { select(i); });
+      b.addEventListener('click', function () { select(i); setHash('set=' + ex.set); });
     });
     translateBtn.addEventListener('click', function () {
       state.translate = !state.translate;
@@ -323,6 +329,16 @@
         } else {
           el('span', { class: 'verse-gloss', text: role[1] }, meta);
         }
+        var link = el('button', { class: 'verse-link', type: 'button', title: 'Copy a link to this prompt', 'aria-label': 'Copy a link to the ' + role[0].toLowerCase() + ' prompt' }, meta);
+        link.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 14a4.5 4.5 0 0 0 6.4 0l3.2-3.2a4.5 4.5 0 0 0-6.4-6.4L11.7 6"/><path d="M14 10a4.5 4.5 0 0 0-6.4 0l-3.2 3.2a4.5 4.5 0 0 0 6.4 6.4l1.5-1.5"/></svg><span>Copy link</span>';
+        (function (link, url) {
+          link.addEventListener('click', function () {
+            var full = location.href.split('#')[0] + '#' + url;
+            setHash(url);
+            var done = function () { link.classList.add('copied'); link.lastChild.textContent = 'Copied'; setTimeout(function () { link.classList.remove('copied'); link.lastChild.textContent = 'Copy link'; }, 1400); };
+            if (navigator.clipboard) navigator.clipboard.writeText(full).then(done, done); else done();
+          });
+        })(link, 'set=' + ex.set + '&v=' + shown);
         el('p', { class: 'prompt' }, main);
 
         // the featured model's answer, collapsed
@@ -345,38 +361,65 @@
 
         // outcome grid: 17 models x 5 samples
         var outc = el('div', { class: 'outcomes' }, body);
-        var grid = el('div', { class: 'grid', role: 'img' }, outc);
-        var n = { m: 0, w: 0, a: 0, r: 0, b: 0, t: 0, x: 0 }, total = 0;
+        var grid = el('div', { class: 'grid', role: 'group', tabindex: '0' }, outc);
+        var n = { m: 0, w: 0, a: 0, r: 0, b: 0, t: 0, x: 0 }, total = 0, info = [];
         ex.grid[code].forEach(function (s, mi) {
           for (var k = 0; k < 5; k++) {
             var c = s.charAt(k) || 'x';
             n[c] = (n[c] || 0) + 1; total++;
             var cls = OUT[c][1];
             if (shown === 'J' && 'awm'.indexOf(c) >= 0) cls = 'o-j';
-            var dot = el('i', { class: 'dot ' + cls + (mi === ex.featured_index ? ' featured' : '') }, grid);
-            (function (name, k2, label) {
-              dot.addEventListener('mouseenter', function (e) {
-                var r = e.target.getBoundingClientRect();
-                showTip('<b>' + esc(name) + '</b><br>sample ' + (k2 + 1) + ' · ' + label, r.left + r.width / 2, r.top);
-              });
-              dot.addEventListener('mouseleave', hideTip);
-            })(D.models[mi].name, k, shown === 'J' && 'awm'.indexOf(c) >= 0 ? 'answered' : OUT[c][0]);
+            el('i', { class: 'dot ' + cls + (mi === ex.featured_index ? ' featured' : '') }, grid);
+            info.push([D.models[mi].name, k, shown === 'J' && 'awm'.indexOf(c) >= 0 ? 'answered' : OUT[c][0]]);
           }
         });
+        gridReader(grid, info);
         var refused = n.r + n.b, mis = n.m + n.w;
         var share = el('div', { class: 'outcome-share' }, outc);
         if (shown === 'J') {
           share.innerHTML = '<span><b class="c-J">' + Math.round(100 * (total - refused) / total) + '%</b> answered</span><span><b>' + Math.round(100 * refused / total) + '%</b> refused</span>';
-          grid.setAttribute('aria-label', refused + ' of ' + total + ' responses refused');
+          grid.setAttribute('aria-label', refused + ' of ' + total + ' responses refused. Arrow keys step through them.');
         } else {
           share.innerHTML = '<span><b class="c-T">' + Math.round(100 * mis / total) + '%</b> misaligned</span><span><b>' + Math.round(100 * refused / total) + '%</b> refused</span>';
-          grid.setAttribute('aria-label', mis + ' of ' + total + ' responses misaligned, ' + refused + ' refused');
+          grid.setAttribute('aria-label', mis + ' of ' + total + ' responses misaligned, ' + refused + ' refused. Arrow keys step through them.');
         }
       });
       fillTexts();
       state.opened = 0;
       if (reduceMotion) { paper.querySelectorAll('.verse').forEach(function (v) { v.classList.add('open'); }); state.opened = 5; }
       else unroll(true);
+    }
+
+    // Each grid is one tab stop. The mouse, a tap or the arrow keys pick a dot (left/right: model, up/down: sample);
+    // taps snap to the nearest dot, since the dots are too small to hit with a finger.
+    function gridReader(grid, info) {
+      var dots = grid.children, cur = -1;
+      function show(i, speak) {
+        if (cur >= 0) dots[cur].classList.remove('active');
+        cur = Math.max(0, Math.min(info.length - 1, i));
+        var f = info[cur];
+        dots[cur].classList.add('active');
+        tipFor(dots[cur], '<b>' + esc(f[0]) + '</b><br>sample ' + (f[1] + 1) + ' · ' + f[2]);
+        if (speak) say(f[0] + ', sample ' + (f[1] + 1) + ', ' + f[2]);
+      }
+      function clear() { if (cur >= 0) dots[cur].classList.remove('active'); hideTip(); }
+      function at(e) {
+        var r = grid.getBoundingClientRect(), pitch = dots[5].offsetLeft - dots[0].offsetLeft || 10;
+        var c = Math.floor((e.clientX - r.left + 1) / pitch), k = Math.floor((e.clientY - r.top + 1) / pitch);
+        return c < 0 || c > 16 || k < 0 || k > 4 ? -1 : c * 5 + k;
+      }
+      grid.addEventListener('mousemove', function (e) { var i = at(e); if (i >= 0 && i !== cur) show(i); });
+      grid.addEventListener('mouseleave', function () { if (document.activeElement !== grid) { clear(); cur = -1; } });
+      grid.addEventListener('click', function (e) { var i = at(e); if (i >= 0) { e.stopPropagation(); show(i, true); } });
+      grid.addEventListener('focus', function () { if (grid.matches(':focus-visible')) show(cur < 0 ? 0 : cur, true); });
+      grid.addEventListener('blur', clear);
+      grid.addEventListener('keydown', function (e) {
+        var step = { ArrowRight: 5, ArrowLeft: -5, ArrowDown: 1, ArrowUp: -1 }[e.key];
+        if (e.key === 'Home') step = -info.length; else if (e.key === 'End') step = info.length; else if (e.key === 'Escape') { clear(); return; }
+        if (step === undefined) return;
+        e.preventDefault();
+        show(cur < 0 ? 0 : cur + step, true);
+      });
     }
 
     function fillTexts() {
@@ -430,6 +473,24 @@
       if (!reduceMotion) { brand.classList.remove('blink'); void brand.offsetWidth; brand.classList.add('blink'); }
     }
 
+    // open a set from a link, unrolled, and bring one of its prompts into view
+    hooks.openSet = function (num, v) {
+      var i = -1;
+      D.examples.forEach(function (ex, j) { if (String(ex.set) === String(num)) i = j; });
+      if (i < 0) return false;
+      if (i !== state.i) select(i);
+      timers.forEach(clearTimeout);
+      paper.querySelectorAll('.verse').forEach(function (vv) { vv.classList.add('open'); });
+      state.opened = 5;
+      var ex = D.examples[i], code = v === ex.fifth ? 'H' : v;
+      var target = (code && paper.querySelector('.verse[data-code="' + code + '"]')) || document.getElementById('sets');
+      setTimeout(function () {
+        target.scrollIntoView({ behavior: reduceMotion ? 'auto' : 'smooth', block: code ? 'center' : 'start' });
+        if (code) { target.classList.remove('linked'); void target.offsetWidth; target.classList.add('linked'); }
+      }, 60);
+      return true;
+    };
+
     function select(i) {
       pgStop();
       state.i = i;
@@ -446,11 +507,14 @@
     var MAX = 60;
     var keys = el('div', { class: 'db-keys' }, host);
     keys.innerHTML = '<span><i style="background:var(--A)"></i>aligned control</span><span><i style="background:var(--T)"></i>target</span><span><i class="p"></i>paraphrase</span>';
-    var rows = D.models.map(function (m) { return { name: m.name, A: m.A, T: m.T, P: m.P, d: m.TA }; });
+    var rows = D.models.map(function (m) { return { id: m.id, name: m.name, A: m.A, T: m.T, P: m.P, d: m.TA }; });
     rows.push({ name: 'All 17 models', A: D.paper.mis.A, T: D.paper.mis.T, P: D.paper.mis.P, d: D.paper.mis.diff, pooled: true });
     var items = rows.map(function (r) {
       var row = el('div', { class: 'db-row' + (r.pooled ? ' pooled' : '') }, host);
-      el('div', { class: 'db-label', text: r.name }, row);
+      var lab = el('div', { class: 'db-label' }, row);
+      if (r.id) el('a', { href: '#model=' + r.id, text: r.name, tabindex: '-1', title: 'Link to ' + r.name }, lab);
+      else lab.textContent = r.name;
+      if (r.id) row.setAttribute('data-model', r.id);
       var tr = el('div', { class: 'db-track' }, row);
       [0, 10, 20, 30, 40, 50, 60].forEach(function (t) { var gl = el('i', { class: 'gridline' }, tr); gl.style.left = (100 * t / MAX) + '%'; });
       var line = el('i', { class: 'db-line' }, tr);
@@ -461,11 +525,15 @@
       a.style.left = p.style.left = line.style.left = t.style.left = (100 * r.A / MAX) + '%';
       p.style.left = (100 * r.P / MAX) + '%';
       line.style.width = '0%';
-      row.addEventListener('mousemove', function (e) {
-        showTip('<b>' + esc(r.name) + '</b><br>aligned control ' + fmt(r.A) + '% → target ' + fmt(r.T) + '%<br>paraphrase ' + fmt(r.P) + '%', e.clientX, e.clientY);
-      });
+      var html = '<b>' + esc(r.name) + '</b><br>aligned control ' + fmt(r.A) + '% → target ' + fmt(r.T) + '%<br>paraphrase ' + fmt(r.P) + '%';
+      row.tabIndex = 0;
+      row.setAttribute('aria-label', r.name + ': aligned control ' + fmt(r.A) + '%, target ' + fmt(r.T) + '%, paraphrase ' + fmt(r.P) + '%, gap ' + signed(r.d) + ' points');
+      row.addEventListener('mousemove', function (e) { showTip(html, e.clientX, e.clientY); });
       row.addEventListener('mouseleave', hideTip);
-      return { r: r, line: line, t: t };
+      row.addEventListener('focus', function () { if (row.matches(':focus-visible')) tipFor(t, html); });
+      row.addEventListener('blur', hideTip);
+      row.addEventListener('click', function (e) { if (e.target.closest('a')) return; e.stopPropagation(); tipFor(t, html); });
+      return { r: r, row: row, line: line, t: t };
     });
     var axis = el('div', { class: 'db-axis' }, host);
     el('div', null, axis);
@@ -494,7 +562,8 @@
       items.forEach(function (it, i) { if (canStretch) stretch(it, 70 * i); else land(it); });
     }
     if (canStretch) items.forEach(function (it) {
-      it.t.parentNode.parentNode.addEventListener('click', function () { stretch(it, 0); });
+      it.row.addEventListener('click', function (e) { if (!e.target.closest('a')) stretch(it, 0); });
+      it.row.addEventListener('keydown', function (e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); stretch(it, 0); } });
     });
     if (reduceMotion) play(); else onVisible(host, play, 0.2);
     function esc(t) { return String(t).replace(/&/g, '&amp;').replace(/</g, '&lt;'); }
@@ -537,10 +606,11 @@
     function bars(hostId, key, cls, lo, hi, pooledVal) {
       var h = document.getElementById(hostId);
       var span = hi - lo, zero = 100 * (0 - lo) / span;
-      var rows = D.models.map(function (m) { return { name: m.name, v: m.refusal[key] }; });
+      var rows = D.models.map(function (m) { return { id: m.id, name: m.name, v: m.refusal[key] }; });
       rows.push({ name: 'All 17 models', v: pooledVal, pooled: true });
       var items = rows.map(function (r) {
         var row = el('div', { class: 'bar-row' + (r.pooled ? ' pooled' : '') }, h);
+        if (r.id) row.setAttribute('data-model', r.id);
         el('div', { class: 'bar-label', text: r.name }, row);
         var tr = el('div', { class: 'bar-track' }, row);
         var z = el('i', { class: 'zero' }, tr); z.style.left = zero + '%';
@@ -634,6 +704,12 @@
       });
     }
     var pinned = null;
+    hooks.pinFrontier = function (name) {
+      var em = null;
+      emperors.forEach(function (e) { if (e.name === name) em = e; });
+      spotlight(em, true);
+      return !!em;
+    };
     function spotlight(em, pin) {
       if (pin) pinned = em;
       var on = em || pinned;
@@ -688,6 +764,28 @@
       }, 0.5);
     }
   })();
+
+  /* ---------------- links: #set=814, #set=814&v=T, #model=kimi-k3 ---------------- */
+  var routedPin = false;
+  function setHash(h) { if (history.replaceState) history.replaceState(null, '', '#' + h); }
+  function route() {
+    var q = {};
+    location.hash.slice(1).split('&').forEach(function (kv) { var p = kv.split('='); if (p[1]) q[p[0]] = decodeURIComponent(p[1]); });
+    document.querySelectorAll('[data-model].picked').forEach(function (n) { n.classList.remove('picked'); });
+    if (routedPin && hooks.pinFrontier) { hooks.pinFrontier(null); routedPin = false; }
+    if (q.set && hooks.openSet) { hooks.openSet(q.set, q.v); return; }
+    if (q.model) {
+      var m = null;
+      D.models.forEach(function (x) { if (x.id === q.model) m = x; });
+      if (!m) return;
+      document.querySelectorAll('[data-model="' + q.model + '"]').forEach(function (n) { n.classList.add('picked'); });
+      if (hooks.pinFrontier) routedPin = hooks.pinFrontier(m.name);
+      var row = document.querySelector('.db-row[data-model="' + q.model + '"]');
+      setTimeout(function () { row.scrollIntoView({ behavior: reduceMotion ? 'auto' : 'smooth', block: 'center' }); }, 60);
+    }
+  }
+  window.addEventListener('hashchange', route);
+  if (/^#(set|model)=/.test(location.hash)) route();
 
   /* ---------------- copy BibTeX ---------------- */
   document.querySelectorAll('[data-copy]').forEach(function (b) {

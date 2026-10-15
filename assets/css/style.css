@@ -340,7 +340,24 @@ h3 { margin: 0 0 12px; font: 600 13px/1.4 var(--sans); letter-spacing: .14em; te
 }
 .dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; }
 .grid .dot { transition: transform .15s; }
-.grid .dot:hover { transform: scale(1.6); }
+.grid .dot.active { transform: scale(1.6); }
+.grid { cursor: pointer; border-radius: 3px; }
+.grid:focus-visible, .db-row:focus-visible { outline: 2px solid var(--A); outline-offset: 3px; }
+.verse-link {
+  display: inline-flex; align-items: center; gap: 5px; margin-left: auto; padding: 2px 6px; border: 0; border-radius: 6px;
+  background: transparent; color: var(--ink-3); font: 500 12px/1.4 var(--sans); cursor: pointer; opacity: 0; transition: opacity .2s, color .2s;
+}
+.verse-link svg { width: 14px; height: 14px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; }
+.verse:hover .verse-link, .verse-link:focus-visible, .verse-link.copied { opacity: 1; }
+.verse-link:hover, .verse-link.copied { color: var(--ink); }
+.verse-link:focus-visible { outline: 2px solid var(--A); }
+@media (hover: none) { .verse-link { opacity: .8; } .verse-link span { display: none; } }
+.verse.linked .verse-body { animation: linked 2.4s ease-out; }
+@keyframes linked { 0%, 30% { background: color-mix(in srgb, var(--J) 14%, transparent); } }
+.db-label a { color: inherit; text-decoration: none; }
+.db-label a:hover { text-decoration: underline; text-underline-offset: 3px; }
+.db-row.picked, .bar-row.picked { background: color-mix(in srgb, var(--J) 13%, transparent); border-radius: 4px; }
+.db-row.picked .db-label, .bar-row.picked .bar-label { color: var(--ink); font-weight: 600; }
 .grid .dot.featured { box-shadow: 0 0 0 1.5px var(--surface), 0 0 0 2.5px var(--ink-3); }
 .o-m { background: var(--o-mis); }
 .o-w { background: var(--o-weak); }
