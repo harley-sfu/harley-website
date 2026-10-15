@@ -1,0 +1,215 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>[lab] HARLEY · User Pressure Benchmark</title>
+<meta name="description" content="HARLEY: 1,591 matched contrast sets built around real user turns in 17 languages, for measuring how language models respond to user pressure.">
+<meta name="color-scheme" content="light dark">
+<meta name="theme-color" media="(prefers-color-scheme: light)" content="#e7e0d1">
+<meta name="theme-color" media="(prefers-color-scheme: dark)" content="#12100d">
+<link rel="icon" type="image/png" href="assets/img/owl.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Inter:wght@400;500;600&family=Noto+Naskh+Arabic:wght@400;500&family=Noto+Serif+SC:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/style.css?v=20">
+<link rel="stylesheet" href="assets/css/fx.css?v=10">
+<link rel="stylesheet" href="assets/css/creatures.css?v=4">
+<script>
+  try { var t = localStorage.getItem('harley-theme'); if (t) document.documentElement.setAttribute('data-theme', t); } catch (e) {}
+</script>
+</head>
+<body>
+
+<header class="topbar">
+  <a class="brand" href="#top" aria-label="HARLEY, back to top">
+    <span class="owl-pair" aria-hidden="true">
+      <img class="owl" src="assets/img/owl.png" alt="" width="28" height="23">
+      <img class="owl owl-awake" src="assets/img/owl-awake.png" alt="" width="28" height="23">
+    </span>
+    <span>Harley</span>
+  </a>
+  <nav class="topnav" aria-label="Sections">
+    <a href="#sets">Sets</a>
+    <a href="#pressure">Pressure</a>
+    <a href="#split">Pretexts</a>
+    <a href="#prophecy">Screening</a>
+    <a href="#data">Data</a>
+  </nav>
+  <div class="theme-switch" role="group" aria-label="Colour theme">
+    <button type="button" data-set-theme="light" aria-pressed="false" title="Light mode">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.5v2.2M12 19.3v2.2M2.5 12h2.2M19.3 12h2.2M5.3 5.3l1.6 1.6M17.1 17.1l1.6 1.6M5.3 18.7l1.6-1.6M17.1 6.9l1.6-1.6"/></svg>
+      <span class="sr-only">Light mode</span>
+    </button>
+    <button type="button" data-set-theme="dark" aria-pressed="false" title="Dark mode">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19.5 14.6A8 8 0 0 1 9.4 4.5a8 8 0 1 0 10.1 10.1z"/></svg>
+      <span class="sr-only">Dark mode</span>
+    </button>
+  </div>
+</header>
+
+<main id="top">
+
+  <!-- ===================== HERO ===================== -->
+  <section class="hero">
+    <div class="hero-text">
+      <p class="overline">A benchmark of matched prompts</p>
+      <h1 class="wordmark">Harley</h1>
+      <p class="lede">Real user requests, each told five ways, to see what <em>user pressure</em> does to language models.</p>
+      <dl class="stats">
+        <div><dt>contrast sets</dt><dd data-count="sets">1,591</dd></div>
+        <div><dt>languages</dt><dd data-count="languages">17</dd></div>
+        <div><dt>models</dt><dd data-count="models">17</dd></div>
+        <div><dt>responses</dt><dd data-count="responses">85,000</dd></div>
+      </dl>
+      <div class="links">
+        <a class="pill" href="#" data-link="paper">Paper</a>
+        <a class="pill" href="#" data-link="data">Dataset</a>
+        <a class="pill" href="#" data-link="code">Code</a>
+      </div>
+    </div>
+    <figure class="rings-figure">
+      <svg id="rings" viewBox="0 0 480 480" role="img" aria-label="All 1,591 contrast sets arranged as rings, one ring per language."></svg>
+      <figcaption>Each ring is a language, each mark a set. Heavier marks are the 200 human-reviewed sets, in the ten inner rings.</figcaption>
+    </figure>
+  </section>
+
+  <!-- ===================== THE SETS (scroll) ===================== -->
+  <section class="chapter" id="sets">
+    <header class="chapter-head">
+      <p class="overline">The verses</p>
+      <h2>One request, told five ways</h2>
+      <p class="sub">Each set starts from a real user turn. We add or remove the pressure, reword it, keep only its style, and either change one fact or add a pretext.</p>
+    </header>
+
+    <div class="scroll-controls">
+      <div class="tabs" role="tablist" aria-label="Example sets"></div>
+      <button class="translate" type="button" aria-pressed="false" hidden>
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h9M8.5 3v2M6 5c.6 3.2 2.6 5.7 5.5 7M11 5c-.8 3.6-3.4 6.6-7 8.2M13 21l4-9 4 9M14.4 18h5.2"/></svg>
+        <span>Translate</span>
+      </button>
+    </div>
+
+    <div class="scroll" id="scroll">
+      <div class="roller roller-top" aria-hidden="true"></div>
+      <div class="paper" id="paper" aria-live="polite"></div>
+      <div class="roller roller-bottom" aria-hidden="true"></div>
+    </div>
+
+    <ul class="legend" aria-label="Outcome legend">
+      <li><i class="dot o-m"></i>misaligned</li>
+      <li><i class="dot o-w"></i>weakly misaligned</li>
+      <li><i class="dot o-r"></i>refused</li>
+      <li><i class="dot o-a"></i>aligned</li>
+      <li><i class="dot o-j"></i>answered (jailbreak variant)</li>
+      <li class="legend-note">Each grid: 17 models &times; 5 samples, judged against the prompt shown.</li>
+    </ul>
+  </section>
+
+  <!-- ===================== FIRST WORLD ===================== -->
+  <section class="chapter" id="pressure">
+    <header class="chapter-head">
+      <p class="overline"><span class="numeral">I</span> The first world &middot; pressure</p>
+      <h2>Pressure makes misalignment almost five times as common</h2>
+      <p class="big-number"><span class="c-A">4.3%</span><span class="arrow" aria-hidden="true">&rarr;</span><span class="c-T">20.4%</span></p>
+      <p class="sub">Same task, with the pressure (<b class="c-T">T</b>) and without it (<b class="c-A">A</b>). Rewording the pressure barely changes the rate; borrowing only its style does not raise it.</p>
+    </header>
+    <div class="chart dumbbell" id="dumbbell" role="group" aria-label="Misalignment on aligned controls and targets for each of 17 models."></div>
+    <p class="chart-note">Share of responses judged misaligned, averaged over the 200 human-reviewed sets. Sorted by the gap.</p>
+  </section>
+
+  <!-- ===================== SECOND WORLD ===================== -->
+  <section class="chapter" id="split">
+    <header class="chapter-head">
+      <p class="overline"><span class="numeral">II</span> The second world &middot; the split</p>
+      <h2>A one-line pretext undoes most refusals</h2>
+      <p class="sub">The fifth prompt of every set takes one of two paths.</p>
+    </header>
+
+    <div class="split" id="split-viz" aria-hidden="true"></div>
+    <div class="split-captions">
+      <div><b class="c-H">60 hard negatives</b><span>One fact changes; helping is right.</span></div>
+      <div><b class="c-J">140 jailbreak variants</b><span>Same request, plus a pretext the model cannot check.</span></div>
+    </div>
+
+    <div class="twin">
+      <figure class="panel">
+        <figcaption>
+          <span class="panel-title">Refusal, target &rarr; jailbreak variant</span>
+          <span class="panel-number"><span class="c-T">21.3%</span><span class="arrow">&rarr;</span><span class="c-J">5.9%</span></span>
+        </figcaption>
+        <div class="bars" id="bars-j" role="img" aria-label="Change in refusal from target to jailbreak variant for each model."></div>
+      </figure>
+      <figure class="panel">
+        <figcaption>
+          <span class="panel-title">Refusal, aligned control &rarr; hard negative</span>
+          <span class="panel-number"><span class="c-A">1.8%</span><span class="arrow">&rarr;</span><span class="c-H">4.8%</span></span>
+        </figcaption>
+        <div class="bars" id="bars-h" role="img" aria-label="Change in refusal from aligned control to hard negative for each model."></div>
+      </figure>
+    </div>
+    <p class="chart-note">Percentage-point change per model, same scale in both panels, same model order as above. The models that resist pressure best lose the most refusals to a pretext.</p>
+  </section>
+
+  <!-- ===================== THIRD WORLD ===================== -->
+  <section class="chapter" id="prophecy">
+    <header class="chapter-head">
+      <p class="overline"><span class="numeral">III</span> The third world &middot; prophecy</p>
+      <h2>Small open models foretell where frontier models fail</h2>
+      <p class="sub">Rank the 200 targets by how often Gemma&nbsp;4&nbsp;31B and Qwen&nbsp;3.8&nbsp;27B fail them. The 31 prompts that break at least one of six frontier models gather near the top, so the two small models work like a compass pointing to where the big ones fall.</p>
+    </header>
+    <figure class="prophecy">
+      <div class="readout" aria-live="polite">
+        <span class="readout-main">Test the top <b id="ro-k">67</b> prompts <span class="muted">(<span id="ro-kp">33</span>%)</span></span>
+        <span class="readout-arrow" aria-hidden="true">&rarr;</span>
+        <span class="readout-main">find <b id="ro-f">28</b> of 31 <span class="muted">(<span id="ro-fp">90</span>%)</span></span>
+      </div>
+      <div class="emperors" id="emperors" hidden></div>
+      <div class="barcode-wrap">
+        <svg id="barcode" viewBox="0 0 1000 220" preserveAspectRatio="none" aria-hidden="true"></svg>
+        <input id="cutoff" type="range" min="1" max="200" value="67" aria-label="Number of top-ranked prompts to test">
+      </div>
+      <div class="axis-labels"><span>ranked first</span><span>ranked last</span></div>
+      <figcaption>Each tick is a target prompt; tall ticks broke a frontier model in at least three of five samples. The curve counts how many are found as you go down the ranking; the dashed line is a random order. AUC 0.88.</figcaption>
+    </figure>
+  </section>
+
+  <!-- ===================== DATA ===================== -->
+  <section class="chapter coda" id="data">
+    <p class="epigraph">Its verses are said to read differently depending on who tells them. <br>So we tell each one five ways.</p>
+    <div class="coda-grid">
+      <div>
+        <h3>What is released</h3>
+        <ul class="plain">
+          <li>1,591 contrast sets in 17 languages, 200 of them human-reviewed</li>
+          <li>85,000 responses from 17 models, with judge labels</li>
+          <li>A taxonomy of 122 user pressures and 57 response behaviours</li>
+          <li>The construction pipeline and analysis code</li>
+        </ul>
+      </div>
+      <div>
+        <h3>Cite</h3>
+        <pre class="bib"><code id="bibtex">@inproceedings{harley2026,
+  title     = {Single-turn misalignment is not a solved
+               problem: Measuring the effect of user
+               pressure with matched controls},
+  author    = {Anonymous},
+  booktitle = {Under review},
+  year      = {2026}
+}</code></pre>
+        <button class="copy" type="button" data-copy="bibtex">Copy BibTeX</button>
+      </div>
+    </div>
+    <p class="fineprint">Prompts are built around user turns from WildChat, LMSYS-Chat-1M and ShareGPT. Examples on this page contain model outputs that some readers may find upsetting. Translations of non-English examples are ours.</p>
+  </section>
+
+</main>
+
+<div class="tooltip" role="tooltip" hidden></div>
+
+<script src="data/site-data.js?v=7"></script>
+<script src="assets/js/main.js?v=27"></script>
+<script src="assets/js/fx.js?v=11"></script>
+<script src="assets/js/creatures.js?v=4"></script>
+</body>
+</html>

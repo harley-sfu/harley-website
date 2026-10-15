@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>[lab] HARLEY creatures</title>
+<meta name="color-scheme" content="light dark">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/style.css?v=9">
+<link rel="stylesheet" href="assets/css/creatures.css?v=4">
+<script>
+  try { var t = localStorage.getItem('harley-theme'); if (t) document.documentElement.setAttribute('data-theme', t); } catch (e) {}
+</script>
+<style>
+  body { padding: 28px var(--gutter) 60px; }
+  h1 { font: 600 34px/1.1 var(--serif); margin: 0 0 4px; }
+  .lab-note { color: var(--ink-3); font-size: 13.5px; margin: 0 0 22px; max-width: 70ch; }
+  .lab-bar { display: flex; gap: 8px; margin-bottom: 26px; }
+  .lab-bar button { font: 500 13px var(--sans); padding: 6px 12px; border-radius: 999px; border: 1px solid var(--rule); background: var(--surface); color: var(--ink); cursor: pointer; }
+  .lab-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(420px, 1fr)); gap: 22px; }
+  figure { margin: 0; padding: 18px; border: 1px solid var(--rule); border-radius: 14px; background: var(--surface); }
+  figcaption { font-size: 13px; color: var(--ink-3); margin-top: 10px; }
+  figcaption b { color: var(--ink); font-weight: 600; }
+  figure svg { display: block; width: 100%; height: auto; overflow: visible; }
+  .lab-sea { fill: none; stroke: var(--A); stroke-width: .8; opacity: .6; }
+  #ship-big .lab-sea, #ship-small .lab-sea { stroke-width: 4; }
+  .lab-ring { fill: none; stroke: var(--rule); }
+  .lab-small { display: flex; align-items: flex-end; gap: 26px; margin-top: 14px; padding-top: 12px; border-top: 1px dashed var(--rule); }
+  .lab-small svg { width: auto; }
+</style>
+</head>
+<body>
+<h1>Creatures, lab</h1>
+<p class="lab-note">The new SVG Thousand Sunny, Treasure Tree Adam and the Elbaph-mural serpent, drawn large. The smaller row shows them at the size they really appear in the top bar. <a href="index.html">See them on the lab copy of the site →</a></p>
+<div class="lab-bar">
+  <button type="button" data-t="light">Light</button>
+  <button type="button" data-t="dark">Dark</button>
+  <button type="button" id="sail">Under way</button>
+  <button type="button" id="turn">Turn about</button>
+</div>
+<div class="lab-grid">
+  <figure>
+    <svg id="ship-big" viewBox="-30 -14 770 710"></svg>
+    <div class="lab-small"><svg id="ship-small" viewBox="-30 -14 770 710" height="52"></svg><svg id="isle-small" viewBox="0 -2 150 108" height="48"></svg></div>
+    <figcaption><b>Thousand Sunny.</b> The lion over crossed bones, a red hull framed in white over planking, the “1” porthole ring, the stern wheel, two striped domes, the straw-hat sail and the furled red one.</figcaption>
+  </figure>
+  <figure>
+    <svg id="isle-big" viewBox="0 -2 150 108"></svg>
+    <figcaption><b>Treasure Tree Adam, Elbaph.</b> A flat crown like a thunderhead, the trunk lit gold, a second forest on the shelf below, and under the shelf the trunk again, rooted among dark rock spires, with falls from both rims down to the sea. It stands far off on the horizon, so it fades into the air toward the water.</figcaption>
+  </figure>
+  <figure>
+    <svg id="serpent-big" viewBox="-30 -30 540 540"></svg>
+    <figcaption><b>The serpent, after the Elbaph mural.</b> A comb of spines behind the head, a blank round white eye, round teeth, a pale herringbone band from the snout to the tip of the tail with small paired crosses either side, and a long tail that thins to a thread half way round the rings, a nod to Jörmungandr. Every thirteen seconds a breath of hellfire; one lap takes 90 seconds.</figcaption>
+  </figure>
+</div>
+<script src="assets/js/creatures.js?v=4"></script>
+<script>
+(function () {
+  var C = window.HarleyCreatures, NS = 'http://www.w3.org/2000/svg';
+  function g(host, html, cls) { var n = document.createElementNS(NS, 'g'); if (cls) n.setAttribute('class', cls); n.innerHTML = html; host.appendChild(n); return n; }
+  function sea(host, x0, x1, y, k) {
+    k = k || 1;
+    var d = 'M' + x0 + ' ' + y; for (var x = x0; x < x1; x += 12 * k) d += 'q' + 3 * k + ' ' + -1.4 * k + ' ' + 6 * k + ' 0t' + 6 * k + ' 0';
+    var p = document.createElementNS(NS, 'path'); p.setAttribute('d', d); p.setAttribute('class', 'lab-sea'); host.appendChild(p);
+  }
+  var big = document.getElementById('ship-big');
+  var flip = g(big, '', 'v-flip'); flip.innerHTML = '<rect x="-22" y="0" width="800" height="640" fill="none"/>';
+  var bob = g(flip, C.shipMarkup(), 'v-bob');
+  sea(big, -30, 740, 640, 4);
+  g(document.getElementById('ship-small'), C.shipMarkup()); sea(document.getElementById('ship-small'), -30, 740, 640, 4);
+  g(document.getElementById('isle-big'), C.islandMarkup()); sea(document.getElementById('isle-big'), 0, 150, 100.4);
+  g(document.getElementById('isle-small'), C.islandMarkup()); sea(document.getElementById('isle-small'), 0, 150, 100.4);
+  var sv = document.getElementById('serpent-big');
+  var ring = document.createElementNS(NS, 'circle'); ring.setAttribute('cx', 240); ring.setAttribute('cy', 240); ring.setAttribute('r', 226); ring.setAttribute('class', 'lab-ring'); sv.appendChild(ring);
+  C.serpent(sv);
+  document.getElementById('sail').onclick = function () { big.classList.toggle('under-way'); };
+  document.getElementById('turn').onclick = function () { flip.classList.toggle('astern'); };
+  [].forEach.call(document.querySelectorAll('[data-t]'), function (b) {
+    b.onclick = function () { document.documentElement.setAttribute('data-theme', b.getAttribute('data-t')); };
+  });
+})();
+</script>
+</body>
+</html>

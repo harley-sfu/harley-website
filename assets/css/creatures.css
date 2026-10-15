@@ -1,0 +1,144 @@
+/* HARLEY: paired with assets/js/creatures.js, which sets html.creatures-voyage / html.creatures-serpent
+   for the parts a page uses. fx.js still runs for the scroll rollers; its ship and serpent step aside. */
+.creatures-voyage .fx-canvas, .creatures-serpent #rings .fx-snake { display: none; }
+
+/* ---------- the Sunny's paint box (same in both themes: she is always yellow and red) ---------- */
+:root {
+  --sun-line: #2a1c12; --sun-red: #bf3328; --sun-red-dark: #8a2019; --sun-white: #f8f2e6;
+  --sun-wood: #c08a52; --sun-wood-2: #87582e; --sun-wood-3: #d8a96d; --sun-gold: #e5b43c;
+  --sun-mane: #f08a26; --sun-mane-2: #b65a12; --sun-face: #ffd75a; --sun-muzzle: #ffeab0;
+  --sun-straw: #f1c54d; --sun-glass: #5d7487; --sun-warm: #f3c45b; --sun-leaf: #5c9a40; --sun-fruit: #f39a2e;
+  --adam-leaf: #6a8a5c; --adam-lit: #93ad7e; --adam-sun: #b9c99e; --adam-dark: #46573f; --adam-shelf: #627f56;
+  --adam-trunk: #8d7458; --adam-bark: #5f4d3a; --adam-root: #554635; --adam-glow: #cfb98c; --adam-fall: #b8d3d6;
+  --adam-plate: #57553f; --adam-plate-2: #3b3a2c; --adam-low: #7a6d5c; --adam-low-2: #53473a;
+  --adam-far: #6d7a7a; --adam-far-2: #4d5858; --adam-rock: #5c6665; --adam-rock-2: #3c4544;
+}
+/* the island is far off on the horizon, so it fades into the air toward the water (see the
+   mask in islandMarkup); against the dark theme it fades less, or it would sink into the night */
+.i-hz-top, .i-hz-bot { stop-color: #fff; }
+.i-hz-top { stop-opacity: .8; }
+.i-hz-bot { stop-opacity: .42; }
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .i-hz-top { stop-opacity: .88; }
+  :root:not([data-theme="light"]) .i-hz-bot { stop-opacity: .55; }
+}
+:root[data-theme="dark"] .i-hz-top { stop-opacity: .88; }
+:root[data-theme="dark"] .i-hz-bot { stop-opacity: .55; }
+
+/* ---------- the voyage: the sea is the top bar's bottom border ---------- */
+.voyage { position: absolute; left: 0; top: 0; width: 100%; height: calc(100% + 1px); overflow: visible; pointer-events: none; z-index: 0; }
+.creatures-voyage .topbar > :not(.voyage) { position: relative; z-index: 1; }
+.creatures-voyage .topbar, .creatures-voyage .topbar.scrolled { border-bottom-color: transparent; }
+.v-waves { fill: none; stroke: var(--rule); stroke-width: 1.1; opacity: .55; transition: opacity .3s; }
+.topbar.scrolled .v-waves { opacity: 1; }
+.v-wake { fill: none; stroke-width: 1.4; opacity: .75; }   /* stroked with a fade toward the left edge */
+.v-wake-ink { stop-color: var(--A); }
+.v-flip { transform-box: fill-box; transform-origin: 50% 50%; transition: transform .5s cubic-bezier(.5, 0, .3, 1); }
+.v-flip.astern { transform: scaleX(-1); }
+.s-flag { transform-box: fill-box; transform-origin: 100% 50%; }
+.under-way .s-flag { animation: v-flag .45s ease-in-out infinite alternate; }
+@keyframes v-flag { to { transform: scaleX(.86) skewY(-5deg); } }
+.v-foam { fill: none; stroke: var(--A); stroke-width: 18; stroke-linecap: round; opacity: 0; transition: opacity .4s; }
+.under-way .v-foam { opacity: .7; }
+.under-way .v-foam path { animation: v-foam .8s ease-out infinite; }
+.under-way .v-foam .v-foam-2 { animation-delay: .4s; }
+@keyframes v-foam { 0% { opacity: 1; } 100% { opacity: .1; } }
+
+/* ---------- ship parts (units of the 690px side study, so strokes look thick here) ---------- */
+.s-line, .s-hull-line { stroke: var(--sun-line); stroke-width: 3.5; stroke-linejoin: round; }
+.s-hull-line { fill: none; stroke-width: 5; }
+.s-rig { fill: none; stroke: var(--sun-line); stroke-width: 1.8; opacity: .7; }
+.s-spar { fill: none; stroke: var(--sun-wood-2); stroke-width: 9; stroke-linecap: round; }
+.s-pole { stroke: var(--sun-line); stroke-width: 3.5; }
+.s-wood { fill: var(--sun-wood); }
+.s-wood-2 { fill: var(--sun-wood-2); }
+.s-plank { fill: none; stroke: var(--sun-wood-2); stroke-width: 2.6; opacity: .65; }
+.s-drum { fill: var(--sun-wood-3); stroke: var(--sun-line); stroke-width: 3.5; }
+.s-drum-end { fill: var(--sun-wood-3); stroke: var(--sun-line); stroke-width: 3.5; }
+.s-drum-ring { fill: none; stroke: var(--sun-wood-2); stroke-width: 3; }
+.s-hoop { fill: none; stroke: #5b5e60; stroke-width: 5; }
+.s-waist { fill: #4b3b2c; }
+.s-lawn { fill: #6cae4a; }
+.s-band { fill: none; stroke: #2e3b45; stroke-width: 15; stroke-linecap: round; }
+.s-frame-ink { fill: none; stroke: var(--sun-line); stroke-width: 19; stroke-linejoin: round; }
+.s-panel { fill: var(--sun-red); stroke: var(--sun-white); stroke-width: 12; stroke-linejoin: round; }
+.s-port { fill: var(--sun-white); stroke: var(--sun-line); stroke-width: 3; }
+.s-port-glass { fill: #2a2622; }
+.s-ring { fill: var(--sun-wood-3); stroke: #2e3b45; stroke-width: 16; }
+.s-one { fill: none; stroke: var(--sun-red); stroke-width: 12; }
+.s-curl-ink { fill: none; stroke: var(--sun-line); stroke-width: 20; stroke-linecap: round; }
+.s-curl { fill: none; stroke: var(--sun-white); stroke-width: 12; stroke-linecap: round; }
+.s-stalk-ink { fill: none; stroke: var(--sun-line); stroke-width: 17; stroke-linecap: round; }
+.s-stalk { fill: none; stroke: var(--sun-white); stroke-width: 10; stroke-linecap: round; }
+.s-red, .s-red-f { fill: var(--sun-red); }
+.s-red { stroke: var(--sun-line); stroke-width: 2.5; }
+.s-yellow { fill: var(--sun-straw); }
+.s-white { fill: var(--sun-white); }
+.s-black, .s-flag { fill: #17120e; }
+.s-glass { fill: var(--sun-glass); }
+.s-glass-sea { fill: #4f8a8c; stroke: var(--sun-line); stroke-width: 2.5; }
+.s-house { fill: #ead9b2; stroke: var(--sun-line); stroke-width: 3.5; }
+.s-house-red { fill: #d4574a; stroke: var(--sun-line); stroke-width: 3.5; }
+.s-roof { fill: var(--sun-red-dark); stroke: var(--sun-line); stroke-width: 3; }
+.s-door { fill: #6b3d22; stroke: var(--sun-line); stroke-width: 2.5; }
+.s-gaff { fill: #e24a3b; }
+.s-gaff-dark { fill: #4a1a17; }
+.s-canvas { fill: var(--sun-white); stroke: var(--sun-line); stroke-width: 3.5; stroke-linejoin: round; }
+.s-seam { fill: none; stroke: #d0c3aa; stroke-width: 2.2; }
+.s-skull { fill: #fffaf0; stroke: var(--sun-line); stroke-width: 3; }
+.s-straw { fill: var(--sun-straw); stroke: var(--sun-line); stroke-width: 2.5; }
+.s-bone-ink { stroke: var(--sun-line); fill: var(--sun-line); stroke-linecap: round; }
+.s-bone-white { stroke: #fffaf0; fill: #fffaf0; stroke-linecap: round; }
+.s-leaf { fill: var(--sun-leaf); stroke: #2d5a22; stroke-width: 2.5; }
+.s-fruit { fill: var(--sun-fruit); }
+.s-collar { fill: var(--sun-gold); stroke: #8f6512; stroke-width: 5; }
+.s-collar-in { fill: none; stroke: #b8861c; stroke-width: 4; }
+.s-rivet { fill: #8f6512; }
+.s-mane path, .s-mane circle { fill: var(--sun-mane); stroke: var(--sun-mane-2); stroke-width: 3; stroke-linejoin: round; }
+.s-mane circle { stroke: none; }
+.s-face { fill: var(--sun-face); stroke: #b88a1a; stroke-width: 3.5; }
+.s-muzzle { fill: var(--sun-muzzle); stroke: #b88a1a; stroke-width: 3; }
+.s-smile { fill: none; stroke: var(--sun-line); stroke-width: 3; stroke-linecap: round; }
+
+/* ---------- Treasure Tree Adam ---------- */
+.i-leaf { fill: var(--adam-leaf); stroke: var(--adam-dark); stroke-width: .7; }
+.i-leaf-lit { fill: var(--adam-lit); opacity: .85; }
+.i-leaf-sun { fill: var(--adam-sun); opacity: .75; }
+.i-leaf-dark { fill: var(--adam-dark); opacity: .8; }
+.i-shelf { fill: var(--adam-shelf); }
+.i-trunk { fill: var(--adam-trunk); stroke: var(--adam-bark); stroke-width: .8; }
+.i-glow { fill: var(--adam-glow); opacity: .85; }
+.i-bark { fill: none; stroke: var(--adam-bark); stroke-width: .8; stroke-linecap: round; opacity: .7; }
+.i-root { fill: none; stroke: var(--adam-root); stroke-width: 2.2; stroke-linecap: round; }
+.i-fall > * { fill: var(--adam-fall); opacity: .85; }
+.i-plate { fill: var(--adam-plate); stroke: var(--adam-plate-2); stroke-width: .7; }
+.i-trunk-low { fill: var(--adam-low); stroke: var(--adam-low-2); stroke-width: .8; }
+.i-glow-low { fill: var(--adam-glow); opacity: .35; }
+.i-spire-far { fill: var(--adam-far); stroke: var(--adam-far-2); stroke-width: .6; stroke-linejoin: round; }
+.i-spire { fill: var(--adam-rock); stroke: var(--adam-rock-2); stroke-width: .6; stroke-linejoin: round; }
+.i-mist { fill: #fff; opacity: .4; }
+.i-surf { fill: none; stroke: #fff; stroke-width: 2.2; stroke-linecap: round; opacity: .85; }
+.i-cloud { fill: #fff; opacity: .55; }
+
+/* ---------- the mural serpent ---------- */
+.creatures-serpent .rings-figure figcaption { margin-top: 22px; }   /* room for the serpent to pass under the rings */
+@media (max-width: 520px) { .creatures-serpent #rings { width: 93%; margin: 0 auto; } }   /* and at the screen's edges */
+.mural-serpent { pointer-events: none; animation: sp-in 1.4s ease-out both; }
+@keyframes sp-in { from { opacity: 0; } }
+.mural-serpent .sp-skin { fill: var(--ink-3); }
+.mural-serpent .sp-spines { fill: none; stroke: var(--ink-3); stroke-width: 2.2; stroke-linecap: round; }
+.mural-serpent .sp-horn { fill: none; stroke: var(--ink-3); stroke-width: 2.4; stroke-linecap: round; }
+.mural-serpent .sp-band { fill: color-mix(in srgb, var(--bg) 85%, var(--ink-3)); }
+.mural-serpent .sp-chev { fill: none; stroke: var(--ink-3); stroke-width: .5; stroke-linejoin: round; }
+.mural-serpent .sp-stars { fill: none; stroke: var(--bg); stroke-width: .5; stroke-linecap: round; }
+.mural-serpent .sp-mouth, .mural-serpent .sp-eye { fill: var(--bg); }
+.mural-serpent .sp-teeth { fill: var(--ink-2); }
+.mural-serpent .sp-fire { transform-box: fill-box; transform-origin: 0 50%; transform: scale(.2); opacity: 0; transition: transform .35s ease-out, opacity .35s; }
+.mural-serpent.breathe .sp-fire { transform: none; opacity: 1; }
+.mural-serpent .sp-fire-o { fill: var(--P); }
+.mural-serpent .sp-fire-i { fill: var(--J); }
+
+@media (prefers-reduced-motion: reduce) {
+  .mural-serpent { animation: none; }
+  .v-flip { transition: none; }
+}

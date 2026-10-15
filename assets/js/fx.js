@@ -120,7 +120,7 @@
   function frame(now) {
     var dt = Math.min(3, (now - last) / 16.67); last = now;
     ctx.clearRect(0, 0, W, H);
-    drawVoyage(now);
+    if (!root.classList.contains('creatures-voyage')) drawVoyage(now);   // creatures.js sails it in the top bar instead
     if (stepSnake && heroOn) stepSnake(now, dt);
     requestAnimationFrame(frame);
   }
