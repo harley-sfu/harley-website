@@ -413,6 +413,10 @@ h3 { margin: 0 0 12px; font: 600 13px/1.4 var(--sans); letter-spacing: .14em; te
 .split-captions { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; max-width: 760px; font-size: 14px; color: var(--ink-2); }
 .split-captions div { display: flex; flex-direction: column; gap: 2px; }
 .split-captions b { font-size: 15px; }
+.split-verse { display: block; margin-bottom: 6px; font: italic 500 17px/1.35 var(--serif); color: var(--ink-2); white-space: nowrap; opacity: 0; transition: opacity .9s ease .5s; }
+.split.done ~ .split-captions .split-verse { opacity: 1; }
+.epigraph.split-refrain { margin: 48px auto 56px; opacity: 0; transition: opacity .9s ease 1.3s; }
+.split.done ~ .split-refrain { opacity: 1; }
 
 .twin { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; margin-top: 48px; }
 .panel { margin: 0; }
@@ -493,6 +497,31 @@ h3 { margin: 0 0 12px; font: 600 13px/1.4 var(--sans); letter-spacing: .14em; te
 .axis-labels { display: flex; justify-content: space-between; margin-top: 8px; font-size: 12px; color: var(--ink-3); letter-spacing: .04em; }
 .prophecy figcaption { margin-top: 14px; font-size: 13px; color: var(--ink-3); max-width: 680px; }
 
+/* ---------- the reading ---------- */
+.saul { margin: 0 auto 72px; max-width: 680px; text-align: center; }
+.saul p { margin: 0; font: italic 500 clamp(22px, 2.8vw, 30px)/1.4 var(--serif); color: var(--ink-2); text-wrap: balance; }
+.saul::before, .saul::after { content: ""; display: block; width: 48px; height: 1px; background: var(--rule); margin: 0 auto 26px; }
+.saul::after { margin: 26px auto 0; }
+.saul footer, .epigraph .by { display: block; margin-top: 16px; font: 500 12px/1.4 var(--sans); font-style: normal; letter-spacing: .14em; text-transform: uppercase; color: var(--ink-3); }
+.weak-bar { margin: 44px 0 0; max-width: 760px; }
+.wb-track, .wb-keys { display: flex; }
+.wb-track { height: 40px; border-radius: 6px; overflow: hidden; }
+.wb-track .o-m, .wb-keys .o-m-k { flex: 11.4; }
+.wb-track .wb-weak, .wb-keys .wb-weak-k { flex: 9.0; }
+.wb-weak { background: repeating-linear-gradient(135deg, var(--o-weak) 0 6px, transparent 6px 11px); box-shadow: inset 0 0 0 1px var(--o-weak); border-radius: 0 6px 6px 0; }
+.wb-keys { margin-top: 10px; font-size: 14px; color: var(--ink-2); }
+.wb-keys span { padding-right: 12px; }
+.wb-keys b { font: 500 22px/1 var(--serif); color: var(--ink); margin-right: 6px; font-variant-numeric: lining-nums; }
+.weak-bar figcaption { margin-top: 14px; font-size: 13px; color: var(--ink-3); max-width: 640px; }
+.reading-stats { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 32px; margin: 56px 0 0; max-width: 960px; }
+.reading-stats div { display: flex; flex-direction: column-reverse; justify-content: flex-end; border-top: 1px solid var(--rule); padding-top: 16px; }
+.reading-stats dd { margin: 0 0 8px; font: 500 clamp(30px, 3.4vw, 40px)/1.05 var(--serif); font-variant-numeric: lining-nums; }
+.reading-stats dd .arrow { color: var(--ink-3); font-family: var(--sans); font-size: .55em; margin: 0 .3em; }
+.reading-stats dt { font-size: 14px; line-height: 1.5; color: var(--ink-2); text-wrap: pretty; }
+.reading-notes { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 48px; margin-top: 64px; max-width: 960px; }
+.reading-notes p { margin: 0; font-size: 16px; line-height: 1.6; color: var(--ink-2); text-wrap: pretty; }
+.reading-notes p + p { margin-top: 12px; }
+
 /* ---------- coda ---------- */
 .coda { padding-bottom: 96px; }
 .epigraph {
@@ -535,6 +564,7 @@ h3 { margin: 0 0 12px; font: 600 13px/1.4 var(--sans); letter-spacing: .14em; te
   .prompt { font-size: 16.5px; }
   .twin { grid-template-columns: 1fr; gap: 48px; }
   .coda-grid { grid-template-columns: minmax(0, 1fr); gap: 36px; }
+  .reading-stats, .reading-notes { grid-template-columns: minmax(0, 1fr); gap: 28px; }
   .db-row, .db-axis { grid-template-columns: 116px minmax(0, 1fr) 42px; gap: 8px; }
   .db-label { font-size: 11.5px; }
   .db-axis .ticks .odd { display: none; }
@@ -547,6 +577,8 @@ h3 { margin: 0 0 12px; font: 600 13px/1.4 var(--sans); letter-spacing: .14em; te
   .roller { margin: 0 -6px; }
   .roller::before { left: -4px; } .roller::after { right: -4px; }
 }
+
+@media (max-width: 480px) { .split-captions { grid-template-columns: 1fr; } }
 
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
