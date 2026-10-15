@@ -214,82 +214,141 @@
       state.translate = !state.translate;
       store('harley-translate', state.translate ? '1' : '0');
       translateBtn.setAttribute('aria-pressed', String(state.translate));
+      var busy = pgBusy;
       pgStop();
-      if (pgReady) { if (state.translate) pgRead(); else pgCarve(); return; }
+      if (busy) { fillTexts(); return; }               // pressed again mid-swap: just land on the text
+      if (pgReady) { pgSwap(); return; }
       paper.querySelectorAll('.prompt, .answer blockquote').forEach(function (p) { p.classList.add('swapping'); });
       setTimeout(function () { fillTexts(); }, 180);
     });
 
-    // Poneglyph: the English is first carved in Poneglyph glyphs, then read out word by word, as Robin
-    // reads the stones. Going back, the words are carved again before the original script returns.
-    var pgReady = false, pgTimers = [];
+    // Poneglyph: on Translate the text flickers into shifting Poneglyph glyphs, which grow or shrink to the
+    // length of the new text and then flicker out into it, like a stone being read.
+    var pgReady = false, pgBusy = false, pgTimers = [];
+    var PG = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
     if (!reduceMotion && document.fonts && document.fonts.load) {
       document.fonts.load('16px Poneglyphs', 'Ab').then(function (f) { pgReady = f.length > 0; }, function () {});
     }
-    function pgStop() { pgTimers.forEach(clearTimeout); pgTimers = []; }
+    function pgStop() {
+      pgTimers.forEach(function (id) { clearTimeout(id); clearInterval(id); }); pgTimers = [];
+      pgBusy = false;
+      paper.querySelectorAll('.pg-sizing').forEach(function (n) { n.classList.remove('pg-sizing'); n.style.height = ''; n.style.transition = ''; });
+    }
     function pgLater(fn, ms) { pgTimers.push(setTimeout(fn, ms)); }
     function pgTargets() {
       return Array.prototype.filter.call(paper.querySelectorAll('.prompt, .answer blockquote'), function (n) {
         return !n.closest('.answer') || n.closest('.answer').classList.contains('open');
       });
     }
-    // wrap each word of a node's text in a span, keeping the diff highlights around them
-    function pgWrap(node) {
+    function pgGlyph() { return PG[Math.random() * PG.length | 0]; }
+    // wrap each word (each character in Chinese) in a token span, keeping the diff highlights around them,
+    // and note how many glyphs would fill the same width
+    function pgTokens(node) {
       var walker = document.createTreeWalker(node, NodeFilter.SHOW_TEXT), texts = [], t;
-      while ((t = walker.nextNode())) if (!t.parentNode.classList.contains('w')) texts.push(t);
+      while ((t = walker.nextNode())) texts.push(t);
       texts.forEach(function (tn) {
         var frag = document.createDocumentFragment();
-        tn.nodeValue.split(/(\s+)/).forEach(function (part) {
+        tn.nodeValue.split(/(\s+|[\u2e80-\u9fff\uf900-\ufaff\uff00-\uffef])/).forEach(function (part) {
           if (!part) return;
           if (/^\s+$/.test(part)) frag.appendChild(document.createTextNode(part));
-          else el('span', { class: 'w', text: part }, frag);
+          else el('span', { class: 'pg-t', text: part }, frag);
         });
         tn.parentNode.replaceChild(frag, tn);
       });
-      return Array.prototype.slice.call(node.querySelectorAll('.w'));
-    }
-    // carve the words, sizing each glyph run to the width of its word so no line reflows when it is read
-    function pgSize(words) {
-      var plain = words.map(function (w) { return w.getBoundingClientRect().width; });
-      words.forEach(function (w) { w.classList.add('pg'); });
-      var carved = words.map(function (w) { return w.getBoundingClientRect().width; });
-      words.forEach(function (w, i) {
-        var r = carved[i] ? Math.min(1.6, Math.max(0.45, plain[i] / carved[i])) : 1;
-        w.style.fontSize = (100 * r).toFixed(1) + '%';
-        w.style.width = plain[i].toFixed(1) + 'px';
+      var adv = parseFloat(getComputedStyle(node).fontSize) * 1.04;   // one glyph at 1.15em, a touch short so full lines don't wrap
+      var toks = Array.prototype.slice.call(node.querySelectorAll('.pg-t'));
+      var carry = 0;                                   // carry the rounding along so the total length still matches
+      toks.forEach(function (tk) {
+        var exact = tk.getBoundingClientRect().width / adv + carry, n = Math.max(1, Math.round(exact));
+        carry = exact - n;
+        tk.setAttribute('data-n', n);
       });
+      return toks;
     }
-    function pgPlain(w) { w.classList.remove('pg'); w.style.fontSize = ''; w.style.width = ''; }
-    function pgWave(words, fn) {
-      var step = Math.min(38, 650 / Math.max(1, words.length));
-      words.forEach(function (w, i) { pgLater(function () { fn(w); }, 120 + i * step); });
-      return 120 + words.length * step;
+    // show a token as n glyphs, each breathing on its own clock
+    function pgShow(tk, n) {
+      if (!tk.classList.contains('pg')) {
+        tk.setAttribute('data-t', tk.textContent);
+        tk.textContent = ''; tk.classList.add('pg'); tk.setAttribute('aria-hidden', 'true');
+        pgFlash(tk);
+      }
+      while (tk.children.length < n) {
+        var g = document.createElement('i');
+        g.textContent = pgGlyph();
+        g.style.setProperty('--d', (0.5 + Math.random() * 0.5).toFixed(2) + 's');   // half a breath, so 1 to 2 s
+        g.style.setProperty('--o', (-Math.random() * 2).toFixed(2) + 's');
+        tk.appendChild(g);
+      }
+      while (tk.children.length > n) tk.removeChild(tk.lastChild);
     }
-    function pgRead() {
-      fillTexts();
-      pgTargets().forEach(function (n) {
-        var words = pgWrap(n);
-        pgSize(words);
-        pgWave(words, function (w) { pgPlain(w); w.classList.add('lit'); });
+    function pgFlash(tk) { tk.classList.remove('flash'); void tk.offsetWidth; tk.classList.add('flash'); }
+    function pgSwap() {
+      var nodes = pgTargets(), IN = 350, SWAP = 430, OUT = 1050, SPREAD = 380;
+      pgBusy = true;
+      var runs = nodes.map(function (n) {
+        var r = { n: n, from: [n.getAttribute('lang'), n.getAttribute('dir')], h0: n.offsetHeight };
+        r.oldTotal = pgTokens(n).reduce(function (sum, tk) { return sum + +tk.dataset.n; }, 0);
+        r.oldHTML = n.innerHTML;
+        return r;
       });
-    }
-    function pgCarve() {
-      var longest = 0;
-      pgTargets().forEach(function (n) {
-        var words = pgWrap(n);
-        var plain = words.map(function (w) { return w.getBoundingClientRect().width; });
-        longest = Math.max(longest, pgWave(words, function (w) {
-          var i = words.indexOf(w);
-          w.classList.add('pg');
-          var c = w.getBoundingClientRect().width;
-          w.style.fontSize = (100 * (c ? Math.min(1.6, Math.max(0.45, plain[i] / c)) : 1)).toFixed(1) + '%';
-          w.style.width = plain[i].toFixed(1) + 'px';
-        }));
+      fillTexts();                                     // lay out the new text once, only to measure it
+      runs.forEach(function (r) {
+        r.to = [r.n.getAttribute('lang'), r.n.getAttribute('dir')];
+        r.h1 = r.n.offsetHeight;
+        r.newTotal = pgTokens(r.n).reduce(function (sum, tk) { return sum + +tk.dataset.n; }, 0);
+        r.newHTML = r.n.innerHTML;
+        r.n.innerHTML = r.oldHTML;                     // the old words are what turn to stone first
+        r.n.setAttribute('lang', r.from[0]); r.n.setAttribute('dir', r.from[1]);
+        r.n.classList.remove('swapping');
+        // the block itself moves once, straight from the old height to the new one; glyphs past its edge are clipped
+        r.n.style.height = r.h0 + 'px';
+        r.n.style.transition = 'height ' + (OUT - SWAP) + 'ms ease-in-out';
+        r.n.classList.add('pg-sizing');
+        r.toks = Array.prototype.slice.call(r.n.querySelectorAll('.pg-t'));
+        r.toks.forEach(function (tk) { pgLater(function () { pgShow(tk, +tk.dataset.n); }, Math.random() * IN); });
       });
+      // swap in the new text's words, still in glyphs and as long as the old text was, then shrink or grow them
+      // one glyph at a time to the new text's length
+      var t0 = performance.now() + SWAP;
+      function allot(r) {
+        var k = Math.min(1, Math.max(0, (performance.now() - t0) / (OUT - SWAP - 80)));
+        var ratio = r.newTotal ? r.oldTotal / r.newTotal : 1;
+        var scale = ratio + (1 - ratio) * k * k * (3 - 2 * k), carry = 0;
+        r.toks.forEach(function (tk) {
+          var exact = +tk.dataset.n * scale + carry, n = Math.max(0, Math.round(exact));
+          carry = exact - n;
+          if (tk.classList.contains('pg')) pgShow(tk, n);
+        });
+      }
       pgLater(function () {
-        paper.querySelectorAll('.prompt, .answer blockquote').forEach(function (p) { p.classList.add('swapping'); });
-        pgLater(fillTexts, 220);
-      }, longest + 250);
+        runs.forEach(function (r) {
+          r.n.setAttribute('lang', r.to[0]); r.n.setAttribute('dir', r.to[1]);
+          r.n.innerHTML = r.newHTML;
+          r.n.style.height = r.h1 + 'px';
+          r.toks = Array.prototype.slice.call(r.n.querySelectorAll('.pg-t'));
+          r.toks.forEach(function (tk) { tk.classList.add('pg'); tk.setAttribute('data-t', tk.textContent); tk.textContent = ''; tk.setAttribute('aria-hidden', 'true'); });
+        });
+        function tick() {
+          runs.forEach(function (r) {
+            allot(r);
+            r.toks.forEach(function (tk) {
+              // about 1.5 shape changes a second per glyph, each at its own moment
+              Array.prototype.forEach.call(tk.children, function (g) { if (Math.random() < 0.06) g.textContent = pgGlyph(); });
+            });
+          });
+        }
+        tick();
+        pgTimers.push(setInterval(tick, 40));
+        runs.forEach(function (r) {
+          r.toks.forEach(function (tk) {
+            pgLater(function () {
+              tk.classList.remove('pg'); tk.removeAttribute('aria-hidden');
+              tk.textContent = tk.dataset.t; pgFlash(tk);
+            }, OUT - SWAP + Math.random() * SPREAD);
+          });
+        });
+      }, SWAP);
+      pgLater(function () { pgStop(); fillTexts(); }, OUT + SPREAD + 200);
     }
 
     function rowOrder(ex) {

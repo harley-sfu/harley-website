@@ -20,7 +20,7 @@ Then open http://localhost:8765.
 
 **One Piece touches in the charts.** Each one is a working part of a chart, so readers who don't know the series lose nothing:
 - *Biblo wakes up.* The owl in the top bar dozes, and opens its eyes while a model's answer is showing (`assets/img/owl-awake.png`, the same drawing with the eyes redrawn).
-- *Poneglyph reading.* Pressing *Translate* first shows the English carved in Poneglyph glyphs, then reads it out word by word; switching back carves it again before the original script returns. Each carved word is sized to the width of the real word, so lines never reflow. The font is `assets/fonts/poneglyph.woff2`.
+- *Poneglyph reading.* Pressing *Translate* (either way) makes the visible prompts and open answers flicker into Poneglyph glyphs that keep changing several times a second. The run of glyphs grows or shrinks to the length of the new text, then flickers out into it. Glyphs are random, not a letter-for-letter cipher. The font is `assets/fonts/poneglyph.woff2`; with reduced motion the text just fades.
 - *Rubber arm.* In section I each target dot stretches out from the aligned control, overshoots and snaps back; bigger gaps stretch further. Clicking a row replays it.
 - *Six emperors and a Log Pose.* Section III shows the six frontier models as cards, with one pip per target that broke the model; pips fill as you drag the cutoff, and clicking a card highlights its ticks. The slider handle is a Log Pose whose needle points at the next failure still below the cutoff. Uses `screening.frontier` and the fourth field of `screening.prompts` (a bitmask over the six models), both written by `build_data.py`.
 
