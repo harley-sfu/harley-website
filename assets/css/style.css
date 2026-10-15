@@ -1,15 +1,16 @@
 /* HARLEY — parchment and ink, with the paper's condition colours */
 
 :root {
-  --bg: #f6f2ea;
-  --surface: #fbf8f2;
-  --paper: #f4ecdd;
-  --paper-edge: #e6d9c1;
+  /* light: aged paper rather than white, so it doesn't glare */
+  --bg: #e7e0d1;
+  --surface: #eee8db;
+  --paper: #efe5cf;
+  --paper-edge: #d2c2a3;
   --ink: #1c1915;
-  --ink-2: #5d554a;
-  --ink-3: #8c8273;
-  --rule: #ddd3c2;
-  --rule-2: #ebe4d7;
+  --ink-2: #544c41;
+  --ink-3: #766c5e;
+  --rule: #cfc3ac;
+  --rule-2: #dbd1bf;
   --roller: #3b2f22;
   --roller-hi: #6a5741;
 
@@ -18,14 +19,14 @@
   --T: #c0392b;
   --H: #99479b;
   --P: #d65400;
-  --S: #008080;
-  --J: #a87400;
+  --S: #007878;
+  --J: #9a6a00;
 
   /* outcomes */
   --o-mis: #c0392b;
   --o-weak: rgba(192, 57, 43, .38);
-  --o-ok: rgba(28, 25, 21, .14);
-  --o-ref: #5d554a;
+  --o-ok: rgba(28, 25, 21, .15);
+  --o-ref: #544c41;
 
   --serif: "Cormorant Garamond", "Iowan Old Style", Georgia, serif;
   --sans: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;

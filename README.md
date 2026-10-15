@@ -12,7 +12,9 @@ python3 -m http.server 8765
 
 Then open http://localhost:8765.
 
-**Light and dark mode.** The page follows the system setting. The sun/moon switch in the top-right corner overrides it, and the choice is remembered in that browser (`localStorage`, key `harley-theme`).
+**Light and dark mode.** The page follows the system setting. The sun/moon switch in the top-right corner overrides it, and the choice is remembered in that browser (`localStorage`, key `harley-theme`). Light mode uses an aged-paper palette rather than white, so it doesn't glare.
+
+**Three small touches** (`assets/css/fx.css`, `assets/js/fx.js`): a ship sails along the top towards the tree as you scroll, a serpent circles the rings, and the example scroll unrolls verse by verse with its rollers turning. They decorate `main.js` without changing it. Add `?calm` to the URL to switch them off; they're also off for anyone with reduced motion enabled. The full over-the-top version is kept on the `over-the-top` branch.
 
 ## Page sections
 
