@@ -415,6 +415,7 @@ h3 { margin: 0 0 12px; font: 600 13px/1.4 var(--sans); letter-spacing: .14em; te
 .split-captions b { font-size: 15px; }
 .split-verse { display: block; margin-bottom: 6px; font: italic 500 17px/1.35 var(--serif); color: var(--ink-2); white-space: nowrap; opacity: 0; transition: opacity .9s ease .5s; }
 .split.done ~ .split-captions .split-verse { opacity: 1; }
+.epigraph.world-verse { margin: 56px auto 0; max-width: 900px; }
 .epigraph.split-refrain { margin: 48px auto 56px; opacity: 0; transition: opacity .9s ease 1.3s; }
 .split.done ~ .split-refrain { opacity: 1; }
 
