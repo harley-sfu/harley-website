@@ -173,13 +173,16 @@ def main():
     hits = T.groupby(['set_number', 'model']).mis.sum().unstack('model')
     positive = (hits[FRONTIER] >= 3).any(axis=1)
     score = T[T.model.isin(SCREENERS)].groupby('set_number').mis.mean()
-    scr = pd.DataFrame({'pos': positive, 'score': score})
+    broke = sum((hits[m] >= 3).astype(int) * 2 ** i for i, m in enumerate(FRONTIER))
+    scr = pd.DataFrame({'pos': positive, 'score': score, 'broke': broke})
     pos_scores, neg_scores = scr[scr.pos].score.values, scr[~scr.pos].score.values
     auc = sum((p > n) + 0.5 * (p == n) for p in pos_scores for n in neg_scores) / (len(pos_scores) * len(neg_scores))
     scr['tie'] = [tie_key(s) for s in scr.index]
     scr = scr.sort_values(['score', 'tie'], ascending=[False, True])
     screening = {'n': len(scr), 'positives': int(scr.pos.sum()), 'auc': round(float(auc), 3),
-                 'prompts': [[int(s), round(float(r.score), 2), int(r.pos)] for s, r in scr.iterrows()]}
+                 'frontier': [names[m] for m in FRONTIER],
+                 # [set, screener score, positive, bitmask over 'frontier' of the models it broke]
+                 'prompts': [[int(s), round(float(r.score), 2), int(r.pos), int(r.broke)] for s, r in scr.iterrows()]}
     top_third = int(scr.head(round(len(scr) / 3)).pos.sum())
     assert screening['positives'] == cur['paper']['screening']['positives']
     print(f'screening: {screening["positives"]} positives, AUC {auc:.3f}, top third finds {top_third}')

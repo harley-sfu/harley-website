@@ -125,6 +125,14 @@ b, strong { font-weight: 600; }
   font: 600 19px/1 var(--serif); letter-spacing: .2em; text-transform: uppercase;
 }
 .owl { display: block; width: 28px; height: auto; mix-blend-mode: multiply; }
+/* Biblo dozes, and wakes while a model's answer is open */
+.owl-pair { position: relative; display: block; width: 28px; }
+.owl-pair .owl-awake { position: absolute; inset: 0; opacity: 0; transition: opacity .12s; }
+.owl-pair .owl:first-child { transition: opacity .12s; }
+.brand.awake .owl-awake { opacity: 1; }
+.brand.awake .owl:first-child { opacity: 0; }
+.brand.blink .owl-pair { animation: owl-blink .32s ease-out; }
+@keyframes owl-blink { 35% { transform: scaleY(.82) translateY(1px); } }
 :root[data-theme="dark"] .owl { filter: invert(1); mix-blend-mode: screen; }
 @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .owl { filter: invert(1); mix-blend-mode: screen; } }
 .topnav { display: flex; gap: 22px; margin-left: auto; }
@@ -297,6 +305,13 @@ h3 { margin: 0 0 12px; font: 600 13px/1.4 var(--sans); letter-spacing: .14em; te
 }
 .prompt .del { color: var(--ink-3); text-decoration: line-through; text-decoration-thickness: 1px; margin-right: .25em; }
 .prompt .gloss-swap { transition: opacity .25s; }
+/* Poneglyph: carved glyphs that are read out word by word on Translate */
+@font-face { font-family: "Poneglyphs"; src: url("../fonts/poneglyph.woff2") format("woff2"); font-display: block; }
+.w.pg { display: inline-block; white-space: nowrap; font-family: "Poneglyphs"; font-style: normal; font-weight: 400; letter-spacing: 0; color: var(--ink-2); text-decoration: none; overflow: visible; }
+.w.lit { animation: pg-lit .7s ease-out; }
+@keyframes pg-lit { from { color: var(--J); } }
+.answer blockquote { transition: opacity .25s; }
+.answer blockquote.swapping { opacity: 0; }
 .prompt.swapping .gloss-swap { opacity: 0; }
 
 .answer-toggle {
@@ -365,7 +380,6 @@ h3 { margin: 0 0 12px; font: 600 13px/1.4 var(--sans); letter-spacing: .14em; te
 .db-keys span { display: inline-flex; align-items: center; gap: 7px; }
 .db-keys i { display: inline-block; width: 10px; height: 10px; border-radius: 50%; }
 .db-keys i.p { width: 8px; height: 8px; box-shadow: inset 0 0 0 1.5px var(--P); }
-.reveal .db-dot.t, .reveal .db-line { transition: left .9s cubic-bezier(.2,.7,.2,1), width .9s cubic-bezier(.2,.7,.2,1); }
 
 /* ---------- split ---------- */
 .split { position: relative; height: 150px; margin: 40px 0 10px; max-width: 760px; }
@@ -414,15 +428,45 @@ h3 { margin: 0 0 12px; font: 600 13px/1.4 var(--sans); letter-spacing: .14em; te
 #barcode .shade { fill: var(--ink); opacity: .04; }
 #barcode .cut { stroke: var(--ink); stroke-width: 1.5; vector-effect: non-scaling-stroke; }
 #barcode .guide { stroke: var(--rule); stroke-width: 1; vector-effect: non-scaling-stroke; }
+#barcode .tick { transition: opacity .2s; }
+#barcode.spot .tick.pos { opacity: .2; }
+#barcode.spot .tick.pos.mine { opacity: 1; stroke: var(--T); }
+
+/* the six frontier models */
+.emperors { margin: 0 0 18px; }
+.emperors[hidden] { display: none; }
+.emperors-head { margin: 0 0 8px; font: 600 12px/1.4 var(--sans); letter-spacing: .14em; text-transform: uppercase; color: var(--ink-2); }
+.emperors-head span { font-weight: 400; letter-spacing: 0; text-transform: none; color: var(--ink-3); }
+.emperor-list { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 8px; }
+.emperor {
+  display: flex; flex-direction: column; align-items: flex-start; gap: 6px; padding: 9px 10px 8px; text-align: left;
+  font: 500 13px/1.25 var(--sans); color: var(--ink); background: transparent; cursor: pointer;
+  border: 1px solid var(--rule); border-radius: 8px; transition: border-color .2s, background .2s;
+}
+.emperor:hover, .emperor.lit { border-color: var(--ink-3); }
+.emperor[aria-pressed="true"] { background: color-mix(in srgb, var(--T) 7%, transparent); border-color: var(--T); }
+.emperor:focus-visible { outline: 2px solid var(--A); outline-offset: 2px; }
+.pips { display: flex; gap: 2px; width: 100%; min-height: 6px; }
+.pips i { flex: 0 1 6px; min-width: 3px; height: 6px; border-radius: 1.5px; box-shadow: inset 0 0 0 1.2px var(--ink-3); transition: background .2s, box-shadow .2s; }
+.pips i.found { background: var(--T); box-shadow: none; }
+.emperor-count { font-size: 12px; color: var(--ink-3); font-variant-numeric: tabular-nums; }
+@media (max-width: 860px) { .emperor-list { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
 #cutoff {
   position: absolute; inset: 0; width: 100%; height: 100%; margin: 0; opacity: 0; cursor: ew-resize;
 }
 .barcode-wrap .handle {
   position: absolute; top: -6px; width: 22px; height: 22px; margin-left: -11px; border-radius: 50%;
-  background: var(--surface); border: 1.5px solid var(--ink); pointer-events: none;
+  background: radial-gradient(circle at 35% 30%, color-mix(in srgb, var(--surface) 40%, white), var(--surface) 70%);
+  border: 1.5px solid var(--ink); pointer-events: none;
   display: grid; place-items: center; box-shadow: 0 2px 6px rgba(0,0,0,.12);
 }
-.barcode-wrap .handle::after { content: ""; width: 6px; height: 6px; border-radius: 50%; background: var(--ink); }
+/* the Log Pose needle: red tip toward the next failure, upright once all are found */
+.barcode-wrap .handle .needle {
+  grid-area: 1 / 1; width: 3px; height: 16px; border-radius: 2px;
+  background: linear-gradient(var(--T) 50%, var(--ink-3) 50%);
+  transition: transform .35s cubic-bezier(.3,1.5,.5,1);
+}
+.barcode-wrap .handle::after { content: ""; grid-area: 1 / 1; width: 4px; height: 4px; border-radius: 50%; background: var(--ink); }
 #cutoff:focus-visible + .handle { outline: 2px solid var(--A); outline-offset: 3px; }
 .axis-labels { display: flex; justify-content: space-between; margin-top: 8px; font-size: 12px; color: var(--ink-3); letter-spacing: .04em; }
 .prophecy figcaption { margin-top: 14px; font-size: 13px; color: var(--ink-3); max-width: 680px; }

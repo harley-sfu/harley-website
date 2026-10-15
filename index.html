@@ -12,7 +12,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Inter:wght@400;500;600&family=Noto+Naskh+Arabic:wght@400;500&family=Noto+Serif+SC:wght@400;500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="assets/css/style.css?v=9">
+<link rel="stylesheet" href="assets/css/style.css?v=10">
 <link rel="stylesheet" href="assets/css/fx.css?v=10">
 <script>
   try { var t = localStorage.getItem('harley-theme'); if (t) document.documentElement.setAttribute('data-theme', t); } catch (e) {}
@@ -22,7 +22,10 @@
 
 <header class="topbar">
   <a class="brand" href="#top" aria-label="HARLEY, back to top">
-    <img class="owl" src="assets/img/owl.png" alt="" width="28" height="23">
+    <span class="owl-pair" aria-hidden="true">
+      <img class="owl" src="assets/img/owl.png" alt="" width="28" height="23">
+      <img class="owl owl-awake" src="assets/img/owl-awake.png" alt="" width="28" height="23">
+    </span>
     <span>Harley</span>
   </a>
   <nav class="topnav" aria-label="Sections">
@@ -152,7 +155,7 @@
     <header class="chapter-head">
       <p class="overline"><span class="numeral">III</span> The third world &middot; prophecy</p>
       <h2>Small open models foretell where frontier models fail</h2>
-      <p class="sub">Rank the 200 targets by how often Gemma&nbsp;4&nbsp;31B and Qwen&nbsp;3.8&nbsp;27B fail them. The 31 prompts that break at least one of six frontier models gather near the top.</p>
+      <p class="sub">Rank the 200 targets by how often Gemma&nbsp;4&nbsp;31B and Qwen&nbsp;3.8&nbsp;27B fail them. The 31 prompts that break at least one of six frontier models gather near the top, so the two small models work like a compass pointing to where the big ones fall.</p>
     </header>
     <figure class="prophecy">
       <div class="readout" aria-live="polite">
@@ -160,6 +163,7 @@
         <span class="readout-arrow" aria-hidden="true">&rarr;</span>
         <span class="readout-main">find <b id="ro-f">28</b> of 31 <span class="muted">(<span id="ro-fp">90</span>%)</span></span>
       </div>
+      <div class="emperors" id="emperors" hidden></div>
       <div class="barcode-wrap">
         <svg id="barcode" viewBox="0 0 1000 220" preserveAspectRatio="none" aria-hidden="true"></svg>
         <input id="cutoff" type="range" min="1" max="200" value="67" aria-label="Number of top-ranked prompts to test">
@@ -202,8 +206,8 @@
 
 <div class="tooltip" role="tooltip" hidden></div>
 
-<script src="data/site-data.js?v=6"></script>
-<script src="assets/js/main.js?v=9"></script>
+<script src="data/site-data.js?v=7"></script>
+<script src="assets/js/main.js?v=10"></script>
 <script src="assets/js/fx.js?v=10"></script>
 </body>
 </html>

@@ -208,9 +208,83 @@
       state.translate = !state.translate;
       store('harley-translate', state.translate ? '1' : '0');
       translateBtn.setAttribute('aria-pressed', String(state.translate));
+      pgStop();
+      if (pgReady) { if (state.translate) pgRead(); else pgCarve(); return; }
       paper.querySelectorAll('.prompt, .answer blockquote').forEach(function (p) { p.classList.add('swapping'); });
       setTimeout(function () { fillTexts(); }, 180);
     });
+
+    // Poneglyph: the English is first carved in Poneglyph glyphs, then read out word by word, as Robin
+    // reads the stones. Going back, the words are carved again before the original script returns.
+    var pgReady = false, pgTimers = [];
+    if (!reduceMotion && document.fonts && document.fonts.load) {
+      document.fonts.load('16px Poneglyphs', 'Ab').then(function (f) { pgReady = f.length > 0; }, function () {});
+    }
+    function pgStop() { pgTimers.forEach(clearTimeout); pgTimers = []; }
+    function pgLater(fn, ms) { pgTimers.push(setTimeout(fn, ms)); }
+    function pgTargets() {
+      return Array.prototype.filter.call(paper.querySelectorAll('.prompt, .answer blockquote'), function (n) {
+        return !n.closest('.answer') || n.closest('.answer').classList.contains('open');
+      });
+    }
+    // wrap each word of a node's text in a span, keeping the diff highlights around them
+    function pgWrap(node) {
+      var walker = document.createTreeWalker(node, NodeFilter.SHOW_TEXT), texts = [], t;
+      while ((t = walker.nextNode())) if (!t.parentNode.classList.contains('w')) texts.push(t);
+      texts.forEach(function (tn) {
+        var frag = document.createDocumentFragment();
+        tn.nodeValue.split(/(\s+)/).forEach(function (part) {
+          if (!part) return;
+          if (/^\s+$/.test(part)) frag.appendChild(document.createTextNode(part));
+          else el('span', { class: 'w', text: part }, frag);
+        });
+        tn.parentNode.replaceChild(frag, tn);
+      });
+      return Array.prototype.slice.call(node.querySelectorAll('.w'));
+    }
+    // carve the words, sizing each glyph run to the width of its word so no line reflows when it is read
+    function pgSize(words) {
+      var plain = words.map(function (w) { return w.getBoundingClientRect().width; });
+      words.forEach(function (w) { w.classList.add('pg'); });
+      var carved = words.map(function (w) { return w.getBoundingClientRect().width; });
+      words.forEach(function (w, i) {
+        var r = carved[i] ? Math.min(1.6, Math.max(0.45, plain[i] / carved[i])) : 1;
+        w.style.fontSize = (100 * r).toFixed(1) + '%';
+        w.style.width = plain[i].toFixed(1) + 'px';
+      });
+    }
+    function pgPlain(w) { w.classList.remove('pg'); w.style.fontSize = ''; w.style.width = ''; }
+    function pgWave(words, fn) {
+      var step = Math.min(38, 650 / Math.max(1, words.length));
+      words.forEach(function (w, i) { pgLater(function () { fn(w); }, 120 + i * step); });
+      return 120 + words.length * step;
+    }
+    function pgRead() {
+      fillTexts();
+      pgTargets().forEach(function (n) {
+        var words = pgWrap(n);
+        pgSize(words);
+        pgWave(words, function (w) { pgPlain(w); w.classList.add('lit'); });
+      });
+    }
+    function pgCarve() {
+      var longest = 0;
+      pgTargets().forEach(function (n) {
+        var words = pgWrap(n);
+        var plain = words.map(function (w) { return w.getBoundingClientRect().width; });
+        longest = Math.max(longest, pgWave(words, function (w) {
+          var i = words.indexOf(w);
+          w.classList.add('pg');
+          var c = w.getBoundingClientRect().width;
+          w.style.fontSize = (100 * (c ? Math.min(1.6, Math.max(0.45, plain[i] / c)) : 1)).toFixed(1) + '%';
+          w.style.width = plain[i].toFixed(1) + 'px';
+        }));
+      });
+      pgLater(function () {
+        paper.querySelectorAll('.prompt, .answer blockquote').forEach(function (p) { p.classList.add('swapping'); });
+        pgLater(fillTexts, 220);
+      }, longest + 250);
+    }
 
     function rowOrder(ex) {
       var codes = ['T', 'P', 'H', 'A', 'S'];
@@ -266,6 +340,7 @@
         tog.addEventListener('click', function () {
           var open = tog.getAttribute('aria-expanded') !== 'true';
           tog.setAttribute('aria-expanded', String(open)); ans.classList.toggle('open', open);
+          wake();
         });
 
         // outcome grid: 17 models x 5 samples
@@ -346,10 +421,21 @@
     }, { passive: true });
     window.addEventListener('resize', function () { unroll(false); });
 
+    // Biblo dozes while the answers are folded away and wakes up while one is open
+    var brand = document.querySelector('.brand');
+    function wake() {
+      var on = !!paper.querySelector('.answer.open');
+      if (on === brand.classList.contains('awake')) return;
+      brand.classList.toggle('awake', on);
+      if (!reduceMotion) { brand.classList.remove('blink'); void brand.offsetWidth; brand.classList.add('blink'); }
+    }
+
     function select(i) {
+      pgStop();
       state.i = i;
       tabsHost.querySelectorAll('.tab').forEach(function (b, j) { b.setAttribute('aria-selected', j === i ? 'true' : 'false'); });
       render();
+      wake();
     }
     render();
   })();
@@ -385,15 +471,31 @@
     el('div', null, axis);
     var ticks = el('div', { class: 'ticks' }, axis);
     [0, 10, 20, 30, 40, 50, 60].forEach(function (t) { var s = el('span', { text: t + '%', class: t % 20 ? 'odd' : '' }, ticks); s.style.left = (100 * t / MAX) + '%'; });
-    function play() {
-      host.classList.add('reveal');
-      items.forEach(function (it, i) {
-        setTimeout(function () {
-          it.t.style.left = (100 * it.r.T / MAX) + '%';
-          it.line.style.width = (100 * (it.r.T - it.r.A) / MAX) + '%';
-        }, reduceMotion ? 0 : 60 * i);
-      });
+    function pct(v) { return (100 * v / MAX) + '%'; }
+    function land(it) { it.t.style.left = pct(it.r.T); it.line.style.width = pct(it.r.T - it.r.A); }
+    // The target dot flies out like a rubber arm: it overshoots, snaps back and settles.
+    // The overshoot grows with the gap, and the line thins while it is stretched.
+    function stretch(it, delay) {
+      var A = it.r.A, T = it.r.T, gap = T - A;
+      var over = (gap < 0 ? -1 : 1) * Math.max(1, Math.abs(gap) * 0.2);
+      var kf = [[A, 0, 1], [T + over, 0.5, 0.4], [T - over * 0.35, 0.72, 1.1], [T + over * 0.1, 0.87, 1], [T, 1, 1]];
+      var ease = ['cubic-bezier(.5,0,.25,1)', 'cubic-bezier(.4,0,.6,1)', 'ease-in-out', 'ease-out'];
+      land(it);
+      it.t.animate(kf.map(function (k, i) {
+        var sq = k[2] < 1 ? 'scale(1.35,.75)' : 'none';
+        return { left: pct(k[0]), transform: sq, offset: k[1], easing: ease[i] };
+      }), { duration: 1150, delay: delay, fill: 'backwards' });
+      it.line.animate(kf.map(function (k, i) {
+        return { width: pct(k[0] - A), transform: 'scaleY(' + k[2] + ')', offset: k[1], easing: ease[i] };
+      }), { duration: 1150, delay: delay, fill: 'backwards' });
     }
+    var canStretch = !reduceMotion && typeof Element.prototype.animate === 'function';
+    function play() {
+      items.forEach(function (it, i) { if (canStretch) stretch(it, 70 * i); else land(it); });
+    }
+    if (canStretch) items.forEach(function (it) {
+      it.t.parentNode.parentNode.addEventListener('click', function () { stretch(it, 0); });
+    });
     if (reduceMotion) play(); else onVisible(host, play, 0.2);
     function esc(t) { return String(t).replace(/&/g, '&amp;').replace(/</g, '&lt;'); }
   })();
@@ -503,8 +605,42 @@
       return svg('line', { x1: x(i), x2: x(i), y1: p[2] ? 164 : 196, y2: 216, class: 'tick' + (p[2] ? ' pos' : '') }, host);
     });
     var cut = svg('line', { x1: 0, x2: 0, y1: YT - 8, y2: 218, class: 'cut' }, host);
+    // the handle is a Log Pose: its needle points at the next frontier failure still ahead of the cutoff
     var handle = el('div', { class: 'handle' }, null);
+    var needle = el('i', { class: 'needle' }, handle);
     input.insertAdjacentElement('afterend', handle);
+
+    // the six frontier models, each with one pip per target prompt that broke it
+    var F = D.screening.frontier, emperors = [];
+    var emHost = document.getElementById('emperors');
+    if (F && P[0].length > 3) {
+      emHost.hidden = false;
+      el('p', { class: 'emperors-head', html: 'Six emperors of the sea <span>&middot; frontier models, and the targets that broke each one</span>' }, emHost);
+      var list = el('div', { class: 'emperor-list' }, emHost);
+      F.forEach(function (name, b) {
+        var mine = []; P.forEach(function (p, i) { if (p[3] >> b & 1) mine.push(i); });
+        var card = el('button', { class: 'emperor', type: 'button', 'aria-pressed': 'false' }, list);
+        el('span', { class: 'emperor-name', text: name }, card);
+        var pips = el('span', { class: 'pips', 'aria-hidden': 'true' }, card);
+        var pipEls = mine.map(function () { return el('i', null, pips); });
+        var count = el('span', { class: 'emperor-count' }, card);
+        var em = { b: b, name: name, mine: mine, card: card, pips: pipEls, count: count };
+        card.addEventListener('mouseenter', function () { spotlight(em, false); });
+        card.addEventListener('mouseleave', function () { spotlight(null, false); });
+        card.addEventListener('focus', function () { spotlight(em, false); });
+        card.addEventListener('blur', function () { spotlight(null, false); });
+        card.addEventListener('click', function () { spotlight(pinned === em ? null : em, true); });
+        emperors.push(em);
+      });
+    }
+    var pinned = null;
+    function spotlight(em, pin) {
+      if (pin) pinned = em;
+      var on = em || pinned;
+      emperors.forEach(function (e) { e.card.setAttribute('aria-pressed', String(e === pinned)); e.card.classList.toggle('lit', e === on); });
+      host.classList.toggle('spot', !!on);
+      ticks.forEach(function (t, i) { t.classList.toggle('mine', !!on && !!(P[i][3] >> on.b & 1)); });
+    }
 
     var roK = document.getElementById('ro-k'), roKp = document.getElementById('ro-kp');
     var roF = document.getElementById('ro-f'), roFp = document.getElementById('ro-fp');
@@ -519,6 +655,21 @@
       roK.textContent = kk; roKp.textContent = Math.floor(100 * kk / N);
       roF.textContent = cum[kk]; roFp.textContent = Math.round(100 * cum[kk] / POS);
       input.value = kk;
+      emperors.forEach(function (e) {
+        var found = 0;
+        e.mine.forEach(function (i, j) { var f = i < kk; e.pips[j].classList.toggle('found', f); if (f) found++; });
+        e.count.textContent = found + ' of ' + e.mine.length;
+        e.card.setAttribute('aria-label', e.name + ': ' + found + ' of ' + e.mine.length + ' failures found in the top ' + kk);
+      });
+      var next = -1;
+      for (var i = kk; i < N; i++) if (P[i][2]) { next = i; break; }
+      var W = wrap.clientWidth, deg = 0;
+      if (next >= 0 && W) {
+        var dx = W * (x(next) - xx) / 1000, dy = 172 - y(kk);
+        deg = Math.atan2(dx, -dy) * 180 / Math.PI;
+      }
+      handle.classList.toggle('home', next < 0);
+      needle.style.transform = 'rotate(' + deg.toFixed(1) + 'deg)';
     }
     input.addEventListener('input', function () { update(+input.value); });
     var TARGET = Math.round(N / 3);
