@@ -468,6 +468,7 @@
     var brand = document.querySelector('.brand');
     function wake() {
       var on = !!paper.querySelector('.answer.open');
+      if (!brand) return;
       if (on === brand.classList.contains('awake')) return;
       brand.classList.toggle('awake', on);
       if (!reduceMotion) { brand.classList.remove('blink'); void brand.offsetWidth; brand.classList.add('blink'); }
@@ -683,7 +684,7 @@
     // the six frontier models, each with one pip per target prompt that broke it
     var F = D.screening.frontier, emperors = [];
     var emHost = document.getElementById('emperors');
-    if (F && P[0].length > 3) {
+    if (F && P[0].length > 3 && emHost) {
       emHost.hidden = false;
       el('p', { class: 'emperors-head', html: 'Six emperors of the sea <span>&middot; frontier models, and the targets that broke each one</span>' }, emHost);
       var list = el('div', { class: 'emperor-list' }, emHost);
