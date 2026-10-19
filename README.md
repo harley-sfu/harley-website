@@ -61,3 +61,4 @@ Before writing anything, the script checks its results against the paper:
 - [ ] Have native speakers check the Chinese and Arabic translations in `data/curated.json`. The set 38 translations come from `notes/fig1_new_example.md`; the set 814 translations are drafts.
 - [ ] **H/J split.** Section II uses the paper's 60 H / 140 J and its per-model values. The label file used for the hero (`hard_negative_gold_reviewed_labels.csv`, also on HF) still has 62 / 138. Once the final labels are released, regenerate and switch section II to recomputed values.
 - [ ] Example responses come from the team's HF release, which is marked as team-only. Confirm the three examples may be shown publicly.
+- [ ] Rewrite the introduction section (`#intro` in `index.html`). The current text is a placeholder drawn from a draft of the paper; check its findings against the final version.

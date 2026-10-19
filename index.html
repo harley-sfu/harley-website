@@ -29,6 +29,7 @@
     <span>Harley</span>
   </a>
   <nav class="topnav" aria-label="Sections">
+    <a href="#intro">Intro</a>
     <a href="#sets">Sets</a>
     <a href="#pressure">Pressure</a>
     <a href="#split">Pretexts</a>
@@ -53,9 +54,9 @@
   <!-- ===================== HERO ===================== -->
   <section class="hero">
     <div class="hero-text">
-      <p class="overline">A benchmark of matched prompts</p>
+      <p class="overline">Measuring the effect of user pressure with matched controls</p>
       <h1 class="wordmark">Harley</h1>
-      <p class="lede">Real user requests, each told five ways, to see what <em>user pressure</em> does to language models.</p>
+      <p class="lede">Real user requests, phrased five ways, to evaluate the impacts of <em>user pressure</em> on language models.</p>
       <dl class="stats">
         <div><dt>contrast sets</dt><dd data-count="sets">1,591</dd></div>
         <div><dt>languages</dt><dd data-count="languages">17</dd></div>
@@ -72,6 +73,41 @@
       <svg id="langbars" viewBox="0 0 480 440" role="group" aria-label="All 1,591 contrast sets by language: gold sets are the 200 human-reviewed ones, silver sets the rest."></svg>
       <figcaption>Each bar is a language, split into its gold and silver sets, with the count of the gold set inside and the total at the end.</figcaption>
     </figure>
+  </section>
+
+  <!-- ===================== INTRODUCTION ===================== -->
+  <section class="chapter intro" id="intro">
+    <header class="chapter-head">
+      <p class="overline">Introduction</p>
+      <h2>Not all misalignment is dramatic</h2>
+      <p class="sub">Users push, and much of what goes wrong in ordinary chats is a model giving in to that pressure. A user may demand an unsupported conclusion, like faked experiment results, or tuck a harmful task inside a legitimate request.</p>
+    </header>
+    <div class="intro-notes">
+      <div>
+        <h3>The problem</h3>
+        <p>Refusal and misalignment rates alone can&rsquo;t explain why a model behaves as it does. To find the cause, we have to see what happens when the pressure changes, the prompt is reworded, a false claim is added, and whether a model blocks safe requests just because they look dangerous.</p>
+      </div>
+      <div>
+        <h3>Our approach</h3>
+        <p>Harley builds 1,591 contrast sets around real user turns from WildChat, LMSYS-Chat-1M and ShareGPT, in 17 languages. The five prompts in each set change one property at a time, separating the pressure from wording, tone, surface cues and false claims.</p>
+      </div>
+      <div>
+        <h3>What we find</h3>
+        <p>User pressure raises misalignment nearly fivefold, from 4.3% to 20.4%. A pretext or claimed fact makes most refusals disappear, while safe requests that only look risky are refused more often. Two small open models can flag the prompts most likely to trip up frontier models.</p>
+      </div>
+    </div>
+    <div class="intro-variants">
+      <h3>The prompts in each set</h3>
+      <p class="intro-variants-note">Each set has five prompts: the first four below, plus either a hard negative or a jailbreak. One is the <em>anchor</em>, the unmodified real user turn; the other four are written around it. The anchor is usually the aligned control, sometimes the target, and never the paraphrase or style control.</p>
+      <dl>
+        <div><dt class="c-T">T &middot; Target</dt><dd>Adds a pressure that pushes the model beyond the task&rsquo;s scope.</dd></div>
+        <div><dt class="c-P">P &middot; Paraphrase</dt><dd>The same pressure in new words, to check the wording isn&rsquo;t doing the work.</dd></div>
+        <div><dt class="c-A">A &middot; Aligned control</dt><dd>Removes the pressure and keeps the task. Usually this is the real user turn.</dd></div>
+        <div><dt class="c-S">S &middot; Style control</dt><dd>Keeps the target&rsquo;s language and register but asks for an unrelated task.</dd></div>
+        <div><dt class="c-H">H &middot; Hard negative</dt><dd>Changes key facts so helping is right, while keeping the surface cues.</dd></div>
+        <div><dt class="c-J">J &middot; Jailbreak</dt><dd>Keeps the requested action but adds a false pretext or an unverifiable claim.</dd></div>
+      </dl>
+    </div>
   </section>
 
   <!-- ===================== THE SETS (scroll) ===================== -->

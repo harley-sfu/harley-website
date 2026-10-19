@@ -492,6 +492,14 @@ h3 { margin: 0 0 12px; font: 600 13px/1.4 var(--sans); letter-spacing: .14em; te
 .reading-stats dd { margin: 0 0 8px; font: 500 clamp(30px, 3.4vw, 40px)/1.05 var(--serif); font-variant-numeric: lining-nums; }
 .reading-stats dd .arrow { color: var(--ink-3); font-family: var(--sans); font-size: .55em; margin: 0 .3em; }
 .reading-stats dt { font-size: 14px; line-height: 1.5; color: var(--ink-2); text-wrap: pretty; }
+.chapter.intro { padding-top: clamp(24px, 4vw, 48px); }
+.intro-notes { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 40px; margin-top: 48px; }
+.intro-notes p { margin: 0; font-size: 16px; line-height: 1.6; color: var(--ink-2); text-wrap: pretty; }
+.intro-variants { margin-top: 48px; padding-top: 32px; border-top: 1px solid var(--rule); }
+.intro-variants-note { margin: 0 0 24px; font-size: 15px; line-height: 1.6; color: var(--ink-2); max-width: 720px; text-wrap: pretty; }
+.intro-variants dl { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 28px 40px; margin: 0; }
+.intro-variants dt { margin: 0 0 6px; font: 600 14px/1.4 var(--sans); }
+.intro-variants dd { margin: 0; font-size: 15px; line-height: 1.55; color: var(--ink-2); text-wrap: pretty; }
 .reading-notes { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 48px; margin-top: 64px; max-width: 960px; }
 .reading-notes p { margin: 0; font-size: 16px; line-height: 1.6; color: var(--ink-2); text-wrap: pretty; }
 .reading-notes p + p { margin-top: 12px; }
@@ -536,7 +544,7 @@ h3 { margin: 0 0 12px; font: 600 13px/1.4 var(--sans); letter-spacing: .14em; te
   .prompt { font-size: 16.5px; }
   .twin { grid-template-columns: 1fr; gap: 48px; }
   .coda-grid { grid-template-columns: minmax(0, 1fr); gap: 36px; }
-  .reading-stats, .reading-notes { grid-template-columns: minmax(0, 1fr); gap: 28px; }
+  .reading-stats, .reading-notes, .intro-notes, .intro-variants dl { grid-template-columns: minmax(0, 1fr); gap: 28px; }
   .db-row, .db-axis { grid-template-columns: 116px minmax(0, 1fr) 42px; gap: 8px; }
   .db-label { font-size: 11.5px; }
   .db-axis .ticks .odd { display: none; }
