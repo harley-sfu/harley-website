@@ -330,6 +330,9 @@ h3 { margin: 0 0 12px; font: 600 13px/1.4 var(--sans); letter-spacing: .14em; te
   grid-auto-flow: column; grid-template-rows: repeat(5, 8px); width: max-content;
 }
 .dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; }
+.featured-mark { position: relative; width: 168px; height: 6px; margin-bottom: 4px; }
+.featured-mark span { position: absolute; left: calc(var(--col) * 10px); top: 0; width: 8px; height: 6px; cursor: help; }
+.featured-mark span::before, .legend .mark-key::before { content: ''; position: absolute; left: 0; top: 0; border: 4px solid transparent; border-bottom: 0; border-top: 6px solid var(--ink-3); }
 .grid .dot { transition: transform .15s; }
 .grid .dot.active { transform: scale(1.6); }
 .grid { cursor: pointer; border-radius: 3px; }
@@ -349,7 +352,6 @@ h3 { margin: 0 0 12px; font: 600 13px/1.4 var(--sans); letter-spacing: .14em; te
 .db-label a:hover { text-decoration: underline; text-underline-offset: 3px; }
 .db-row.picked, .bar-row.picked { background: color-mix(in srgb, var(--J) 13%, transparent); border-radius: 4px; }
 .db-row.picked .db-label, .bar-row.picked .bar-label { color: var(--ink); font-weight: 600; }
-.grid .dot.featured { box-shadow: 0 0 0 1.5px var(--surface), 0 0 0 2.5px var(--ink-3); }
 .o-m { background: var(--o-mis); }
 .o-w { background: var(--o-weak); }
 .o-a { background: var(--o-ok); }
@@ -361,6 +363,7 @@ h3 { margin: 0 0 12px; font: 600 13px/1.4 var(--sans); letter-spacing: .14em; te
 
 .legend { list-style: none; display: flex; flex-wrap: wrap; gap: 8px 20px; padding: 0; margin: 22px auto 0; max-width: 1000px; font-size: 13px; color: var(--ink-2); }
 .legend li { display: inline-flex; align-items: center; gap: 8px; }
+.legend .mark-key { position: relative; width: 8px; height: 6px; }
 .legend .legend-note { color: var(--ink-3); margin-left: auto; }
 
 /* ---------- dumbbell ---------- */

@@ -247,6 +247,12 @@
 
         // outcome grid: 17 models x 5 samples
         var outc = el('div', { class: 'outcomes' }, body);
+        // a small pointer over the featured model's column, whose answer sits under the prompt
+        var mark = el('div', { class: 'featured-mark', 'aria-hidden': 'true' }, outc);
+        mark.style.setProperty('--col', ex.featured_index);
+        var pin = el('span', null, mark);
+        pin.addEventListener('mouseenter', function () { tipFor(pin, '<b>' + esc(model.name) + '</b><br>the answer shown here'); });
+        pin.addEventListener('mouseleave', hideTip);
         var grid = el('div', { class: 'grid', role: 'group', tabindex: '0' }, outc);
         var n = { m: 0, w: 0, a: 0, r: 0, b: 0, t: 0, x: 0 }, total = 0, info = [];
         ex.grid[code].forEach(function (s, mi) {
@@ -255,7 +261,7 @@
             n[c] = (n[c] || 0) + 1; total++;
             var cls = OUT[c][1];
             if (shown === 'J' && 'awm'.indexOf(c) >= 0) cls = 'o-j';
-            el('i', { class: 'dot ' + cls + (mi === ex.featured_index ? ' featured' : '') }, grid);
+            el('i', { class: 'dot ' + cls }, grid);
             info.push([D.models[mi].name, k, shown === 'J' && 'awm'.indexOf(c) >= 0 ? 'answered' : OUT[c][0]]);
           }
         });
@@ -264,10 +270,10 @@
         var share = el('div', { class: 'outcome-share' }, outc);
         if (shown === 'J') {
           share.innerHTML = '<span><b class="c-J">' + Math.round(100 * (total - refused) / total) + '%</b> answered</span><span><b>' + Math.round(100 * refused / total) + '%</b> refused</span>';
-          grid.setAttribute('aria-label', refused + ' of ' + total + ' responses refused. Arrow keys step through them.');
+          grid.setAttribute('aria-label', refused + ' of ' + total + ' responses refused. The marked column is ' + model.name + '. Arrow keys step through them.');
         } else {
           share.innerHTML = '<span><b class="c-T">' + Math.round(100 * mis / total) + '%</b> misaligned</span><span><b>' + Math.round(100 * refused / total) + '%</b> refused</span>';
-          grid.setAttribute('aria-label', mis + ' of ' + total + ' responses misaligned, ' + refused + ' refused. Arrow keys step through them.');
+          grid.setAttribute('aria-label', mis + ' of ' + total + ' responses misaligned, ' + refused + ' refused. The marked column is ' + model.name + '. Arrow keys step through them.');
         }
       });
       fillTexts();
