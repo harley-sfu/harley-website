@@ -252,9 +252,7 @@
         // a small pointer over the featured model's column, whose answer sits under the prompt
         var mark = el('div', { class: 'featured-mark', 'aria-hidden': 'true' }, outc);
         mark.style.setProperty('--col', ex.featured_index);
-        var pin = el('span', null, mark);
-        pin.addEventListener('mouseenter', function () { tipFor(pin, '<b>' + esc(model.name) + '</b><br>the answer shown here'); });
-        pin.addEventListener('mouseleave', hideTip);
+        el('span', null, mark);
         var grid = el('div', { class: 'grid', role: 'group', tabindex: '0' }, outc);
         var n = { m: 0, w: 0, a: 0, r: 0, b: 0, t: 0, x: 0 }, total = 0, info = [];
         ex.grid[code].forEach(function (s, mi) {
