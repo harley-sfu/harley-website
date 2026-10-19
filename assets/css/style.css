@@ -299,19 +299,8 @@ h3 { margin: 0 0 12px; font: 600 13px/1.4 var(--sans); letter-spacing: .14em; te
   box-decoration-break: clone; -webkit-box-decoration-break: clone; padding: 0 1px;
 }
 .prompt .del { color: var(--ink-3); text-decoration: line-through; text-decoration-thickness: 1px; margin-right: .25em; }
-.prompt .gloss-swap { transition: opacity .25s; }
-/* Poneglyph: carved glyphs that are read out word by word on Translate */
-@font-face { font-family: "Poneglyphs"; src: url("../fonts/poneglyph.woff2") format("woff2"); font-display: block; }
-.pg-t.pg { font-family: "Poneglyphs"; font-size: 1.15em; line-height: 1; font-style: normal; font-weight: 400; letter-spacing: .04em; color: var(--ink-2); }
-.pg-t.pg i { font-style: normal; animation: pg-breathe var(--d, 1.4s) ease-in-out infinite alternate; animation-delay: var(--o, 0s); }
-.pg-sizing { overflow: hidden; }
-.pg-t.flash { animation: pg-fade .22s ease-out; }
-/* soft, low-contrast and slow: no glyph flashes, so the effect stays well under three changes in brightness a second */
-@keyframes pg-breathe { from { opacity: 1; } to { opacity: .75; } }
-@keyframes pg-fade { from { opacity: .25; } }
-.answer blockquote { transition: opacity .25s; }
-.answer blockquote.swapping { opacity: 0; }
-.prompt.swapping .gloss-swap { opacity: 0; }
+.tr-in { animation: tr-in .35s ease-out; }
+@keyframes tr-in { from { opacity: 0; filter: blur(3px); } }
 
 .answer-toggle {
   margin-top: 10px; border: 0; background: none; padding: 0; cursor: pointer; color: var(--ink-3);
