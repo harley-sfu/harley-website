@@ -234,7 +234,7 @@
         var o = OUT[g.charAt(0)] || OUT.x;
         var oLabel = shown === 'J' && 'awm'.indexOf(g.charAt(0)) >= 0 ? 'answered' : o[0];
         var tog = el('button', { class: 'answer-toggle', type: 'button', 'aria-expanded': 'false' }, main);
-        tog.innerHTML = '<span class="caret">▸</span> <i class="mark-key" aria-hidden="true"></i>' + esc(model.name) + '’s answer';
+        tog.innerHTML = '<span class="caret">▸</span> ' + esc(model.name) + '’s answer';
         var ans = el('div', { class: 'answer' }, main);
         var ansIn = el('div', null, ans);
         var bq = el('blockquote', null, ansIn);
