@@ -70,6 +70,7 @@
       </div>
     </div>
     <figure class="bars-figure">
+      <p class="bars-title">Contrast sets distribution by language</p>
       <svg id="langbars" viewBox="0 0 480 440" role="group" aria-label="All 1,591 contrast sets by language: gold sets are the 200 human-reviewed ones, silver sets the rest."></svg>
       <figcaption>Each bar is a language, split into its gold and silver sets, with the count of the gold set inside and the total at the end.</figcaption>
     </figure>
@@ -98,7 +99,7 @@
     </div>
     <div class="intro-variants">
       <h3>The prompts in each set</h3>
-      <p class="intro-variants-note">Each set has five prompts: the first four below, plus either a hard negative or a jailbreak. One is the <em>anchor</em>, the unmodified real user turn; the other four are written around it. The anchor is usually the aligned control, sometimes the target, and never the paraphrase or style control.</p>
+      <p class="intro-variants-note">Each set has five prompts: the first four below, plus either a hard negative or a jailbreak. One is the <em>anchor</em>, the unmodified real user turn; the other four are written around it. The anchor is never the paraphrase or style control.</p>
       <dl>
         <div><dt class="c-T">T &middot; Target</dt><dd>Adds a pressure that pushes the model beyond the task&rsquo;s scope.</dd></div>
         <div><dt class="c-P">P &middot; Paraphrase</dt><dd>The same pressure in new words, to check the wording isn&rsquo;t doing the work.</dd></div>
