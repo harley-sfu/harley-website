@@ -111,9 +111,9 @@
     // legend: two series, so it is always shown
     var lg = svg('g', { class: 'legend' }, host);
     svg('rect', { x: BX, y: 8, width: 12, height: 10, rx: 2, class: 'bar gold' }, lg);
-    svg('text', { x: BX + 18, y: 17, class: 'legend-lab' }, lg).textContent = 'Gold · ' + goldTotal.toLocaleString('en-US') + ' human-reviewed';
-    svg('rect', { x: BX + 196, y: 8, width: 12, height: 10, rx: 2, class: 'bar silver' }, lg);
-    svg('text', { x: BX + 214, y: 17, class: 'legend-lab' }, lg).textContent = 'Silver · ' + silverTotal.toLocaleString('en-US');
+    svg('text', { x: BX + 18, y: 17, class: 'legend-lab' }, lg).textContent = 'Gold set · ' + goldTotal.toLocaleString('en-US') + ' human-reviewed';
+    svg('rect', { x: BX + 218, y: 8, width: 12, height: 10, rx: 2, class: 'bar silver' }, lg);
+    svg('text', { x: BX + 236, y: 17, class: 'legend-lab' }, lg).textContent = 'Silver set · ' + silverTotal.toLocaleString('en-US');
 
     var rows = [];
     order.forEach(function (lang, i) {
