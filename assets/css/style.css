@@ -210,7 +210,7 @@ h3 { margin: 0 0 12px; font: 600 13px/1.4 var(--sans); letter-spacing: .14em; te
 .pill[aria-disabled="true"]::after { content: "soon"; font-size: 11px; letter-spacing: .06em; text-transform: uppercase; color: var(--ink-3); }
 
 .bars-figure { margin: 0; position: relative; }
-.bars-title { margin: 0 0 6px; text-align: center; font-size: 14px; font-weight: 600; color: var(--ink); }
+.chart-title { margin: 0 0 10px; text-align: center; font-size: 14px; font-weight: 600; color: var(--ink); }
 #langbars { display: block; width: 100%; height: auto; overflow: visible; }
 .bars-figure figcaption { margin-top: 10px; text-align: center; font-size: 12.5px; color: var(--ink-3); }
 #langbars .bar { transition: opacity .2s; }
