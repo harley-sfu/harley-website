@@ -600,35 +600,25 @@
   (function split() {
     var host = document.getElementById('split-viz');
     var nH = D.paper.split.H, nJ = D.paper.split.J, N = nH + nJ;
-    var rnd = mulberry32(60140), kinds = [];
-    for (var i = 0; i < N; i++) kinds.push(i < nH ? 'h' : 'j');
-    for (var k = N - 1; k > 0; k--) { var j = Math.floor(rnd() * (k + 1)); var tmp = kinds[k]; kinds[k] = kinds[j]; kinds[j] = tmp; }
-    var tiles = kinds.map(function (kind) { return el('i', { class: 'tile ' + kind }, host); });
-    var done = false;
+    var tiles = [];
+    for (var i = 0; i < N; i++) tiles.push(el('i', { class: 'tile ' + (i < nH ? 'h' : 'j') }, host));
+    // hard negatives on the left, jailbreak variants on the right, a gap between them
     function layout() {
       var W = host.clientWidth;
       var s = W < 420 ? 12 : 14, g = 3, u = s + g, rows = W < 640 ? 10 : 6, gap = W < 420 ? 22 : 40;
-      var colsAll = N / rows;
-      var startX = 0, hCols = Math.ceil(nH / rows), jCols = Math.ceil(nJ / rows);
+      var hCols = Math.ceil(nH / rows);
       host.style.height = (rows * u) + 'px';
-      var hi = 0, ji = 0;
       tiles.forEach(function (t, idx) {
+        var k = idx < nH ? idx : idx - nH, x0 = idx < nH ? 0 : hCols * u + gap;
         t.style.width = t.style.height = s + 'px';
-        var x, y;
-        if (!done) { x = startX + Math.floor(idx / rows) * u; y = (idx % rows) * u; }
-        else if (kinds[idx] === 'h') { x = Math.floor(hi / rows) * u; y = (hi % rows) * u; hi++; }
-        else { x = hCols * u + gap + Math.floor(ji / rows) * u; y = (ji % rows) * u; ji++; }
-        t.style.left = x + 'px'; t.style.top = y + 'px';
-        t.style.transitionDelay = done && !reduceMotion ? (Math.floor(idx / rows) * 18) + 'ms' : '0ms';
+        t.style.left = (x0 + Math.floor(k / rows) * u) + 'px';
+        t.style.top = (k % rows) * u + 'px';
       });
       var caps = document.querySelector('.split-captions');
       caps.style.gridTemplateColumns = W < 640 ? '' : (hCols * u + gap) + 'px 1fr';
-      return colsAll;
     }
     layout();
     window.addEventListener('resize', layout);
-    function play() { done = true; host.classList.add('done'); layout(); }
-    if (reduceMotion) play(); else onVisible(host, function () { setTimeout(play, 350); }, 0.6);
 
     function bars(hostId, key, cls, lo, hi, pooledVal) {
       var h = document.getElementById(hostId);
