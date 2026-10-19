@@ -569,7 +569,7 @@
     keys.innerHTML = '<span><i style="background:var(--A)"></i>aligned control</span><span><i style="background:var(--T)"></i>target</span><span><i class="p"></i>paraphrase</span>';
     var rows = D.models.map(function (m) { return { id: m.id, name: m.name, A: m.A, T: m.T, P: m.P, d: m.TA }; });
     rows.push({ name: 'All 17 models', A: D.paper.mis.A, T: D.paper.mis.T, P: D.paper.mis.P, d: D.paper.mis.diff, pooled: true });
-    var items = rows.map(function (r) {
+    rows.forEach(function (r) {
       var row = el('div', { class: 'db-row' + (r.pooled ? ' pooled' : '') }, host);
       var lab = el('div', { class: 'db-label' }, row);
       if (r.id) el('a', { href: '#model=' + r.id, text: r.name, tabindex: '-1', title: 'Link to ' + r.name }, lab);
@@ -582,9 +582,10 @@
       var a = el('i', { class: 'db-dot a' }, tr);
       var t = el('i', { class: 'db-dot t' }, tr);
       el('div', { class: 'db-val', text: signed(r.d) }, row);
-      a.style.left = p.style.left = line.style.left = t.style.left = (100 * r.A / MAX) + '%';
+      a.style.left = line.style.left = (100 * r.A / MAX) + '%';
       p.style.left = (100 * r.P / MAX) + '%';
-      line.style.width = '0%';
+      t.style.left = (100 * r.T / MAX) + '%';
+      line.style.width = (100 * (r.T - r.A) / MAX) + '%';
       var html = '<b>' + esc(r.name) + '</b><br>aligned control ' + fmt(r.A) + '% → target ' + fmt(r.T) + '%<br>paraphrase ' + fmt(r.P) + '%';
       row.tabIndex = 0;
       row.setAttribute('aria-label', r.name + ': aligned control ' + fmt(r.A) + '%, target ' + fmt(r.T) + '%, paraphrase ' + fmt(r.P) + '%, gap ' + signed(r.d) + ' points');
@@ -593,39 +594,11 @@
       row.addEventListener('focus', function () { if (row.matches(':focus-visible')) tipFor(t, html); });
       row.addEventListener('blur', hideTip);
       row.addEventListener('click', function (e) { if (e.target.closest('a')) return; e.stopPropagation(); tipFor(t, html); });
-      return { r: r, row: row, line: line, t: t };
     });
     var axis = el('div', { class: 'db-axis' }, host);
     el('div', null, axis);
     var ticks = el('div', { class: 'ticks' }, axis);
     [0, 10, 20, 30, 40, 50, 60].forEach(function (t) { var s = el('span', { text: t + '%', class: t % 20 ? 'odd' : '' }, ticks); s.style.left = (100 * t / MAX) + '%'; });
-    function pct(v) { return (100 * v / MAX) + '%'; }
-    function land(it) { it.t.style.left = pct(it.r.T); it.line.style.width = pct(it.r.T - it.r.A); }
-    // The target dot flies out like a rubber arm: it overshoots, snaps back and settles.
-    // The overshoot grows with the gap, and the line thins while it is stretched.
-    function stretch(it, delay) {
-      var A = it.r.A, T = it.r.T, gap = T - A;
-      var over = (gap < 0 ? -1 : 1) * Math.max(1, Math.abs(gap) * 0.2);
-      var kf = [[A, 0, 1], [T + over, 0.5, 0.4], [T - over * 0.35, 0.72, 1.1], [T + over * 0.1, 0.87, 1], [T, 1, 1]];
-      var ease = ['cubic-bezier(.5,0,.25,1)', 'cubic-bezier(.4,0,.6,1)', 'ease-in-out', 'ease-out'];
-      land(it);
-      it.t.animate(kf.map(function (k, i) {
-        var sq = k[2] < 1 ? 'scale(1.35,.75)' : 'none';
-        return { left: pct(k[0]), transform: sq, offset: k[1], easing: ease[i] };
-      }), { duration: 1150, delay: delay, fill: 'backwards' });
-      it.line.animate(kf.map(function (k, i) {
-        return { width: pct(k[0] - A), transform: 'scaleY(' + k[2] + ')', offset: k[1], easing: ease[i] };
-      }), { duration: 1150, delay: delay, fill: 'backwards' });
-    }
-    var canStretch = !reduceMotion && typeof Element.prototype.animate === 'function';
-    function play() {
-      items.forEach(function (it, i) { if (canStretch) stretch(it, 70 * i); else land(it); });
-    }
-    if (canStretch) items.forEach(function (it) {
-      it.row.addEventListener('click', function (e) { if (!e.target.closest('a')) stretch(it, 0); });
-      it.row.addEventListener('keydown', function (e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); stretch(it, 0); } });
-    });
-    if (reduceMotion) play(); else onVisible(host, play, 0.2);
     function esc(t) { return String(t).replace(/&/g, '&amp;').replace(/</g, '&lt;'); }
   })();
 
@@ -668,7 +641,7 @@
       var span = hi - lo, zero = 100 * (0 - lo) / span;
       var rows = D.models.map(function (m) { return { id: m.id, name: m.name, v: m.refusal[key] }; });
       rows.push({ name: 'All 17 models', v: pooledVal, pooled: true });
-      var items = rows.map(function (r) {
+      rows.forEach(function (r) {
         var row = el('div', { class: 'bar-row' + (r.pooled ? ' pooled' : '') }, h);
         if (r.id) row.setAttribute('data-model', r.id);
         el('div', { class: 'bar-label', text: r.name }, row);
