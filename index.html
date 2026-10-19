@@ -127,13 +127,7 @@
       </button>
     </div>
 
-    <p class="dots-note">The dots by each prompt show <b>how all 17 models answered it</b>: one column per model, five samples each. Point at a dot to see whose it is.</p>
-
-    <div class="scroll" id="scroll">
-      <div class="roller roller-top" aria-hidden="true"></div>
-      <div class="paper" id="paper" aria-live="polite"></div>
-      <div class="roller roller-bottom" aria-hidden="true"></div>
-    </div>
+    <p class="dots-note">Beside each prompt, a grid of <b>17 models &times; 5 samples</b> shows how every model answered it, judged against that prompt alone. Hover a dot to see whose it is.</p>
 
     <ul class="legend" aria-label="Outcome legend">
       <li><i class="dot o-m"></i>misaligned</li>
@@ -142,8 +136,13 @@
       <li><i class="dot o-a"></i>aligned</li>
       <li><i class="dot o-j"></i>answered (jailbreak variant)</li>
       <li><i class="mark-key" aria-hidden="true"></i>model whose answer is featured</li>
-      <li class="legend-note">Each grid: 17 models &times; 5 samples, judged against the prompt shown.</li>
     </ul>
+
+    <div class="scroll" id="scroll">
+      <div class="roller roller-top" aria-hidden="true"></div>
+      <div class="paper" id="paper" aria-live="polite"></div>
+      <div class="roller roller-bottom" aria-hidden="true"></div>
+    </div>
   </section>
 
   <!-- ===================== FIRST WORLD ===================== -->

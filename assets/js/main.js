@@ -198,7 +198,7 @@
       translateBtn.hidden = !ex.prompts_en;
       translateBtn.setAttribute('aria-pressed', String(state.translate && !!ex.prompts_en));
       paper.innerHTML = '';
-      rowOrder(ex).forEach(function (code) {
+      rowOrder(ex).forEach(function (code, vi) {
         var shown = code === 'H' ? ex.fifth : code;
         var role = ROLE[shown];
         var verse = el('article', { class: 'verse', 'data-code': code }, paper);
@@ -234,7 +234,7 @@
         var o = OUT[g.charAt(0)] || OUT.x;
         var oLabel = shown === 'J' && 'awm'.indexOf(g.charAt(0)) >= 0 ? 'answered' : o[0];
         var tog = el('button', { class: 'answer-toggle', type: 'button', 'aria-expanded': 'false' }, main);
-        tog.innerHTML = '<span class="caret">▸</span> ' + esc(model.name) + '’s answer';
+        tog.innerHTML = '<span class="caret">▸</span> <i class="mark-key" aria-hidden="true"></i>' + esc(model.name) + '’s answer';
         var ans = el('div', { class: 'answer' }, main);
         var ansIn = el('div', null, ans);
         var bq = el('blockquote', null, ansIn);
@@ -248,12 +248,15 @@
         });
 
         // outcome grid: 17 models x 5 samples
-        var outc = el('div', { class: 'outcomes' }, body);
+        var outc = el('div', { class: 'outcomes' + (vi === 0 ? ' annotated' : '') }, body);
+        // the first grid gets axis labels, so new readers learn to read the rest
+        if (vi === 0) el('div', { class: 'grid-axis', 'aria-hidden': 'true', html: '<span>17 models</span><i></i>' }, outc);
         // a small pointer over the featured model's column, whose answer sits under the prompt
         var mark = el('div', { class: 'featured-mark', 'aria-hidden': 'true' }, outc);
         mark.style.setProperty('--col', ex.featured_index);
         el('span', null, mark);
         var grid = el('div', { class: 'grid', role: 'group', tabindex: '0' }, outc);
+        if (vi === 0) el('span', { class: 'grid-side', 'aria-hidden': 'true', text: '5 samples' }, outc);
         var n = { m: 0, w: 0, a: 0, r: 0, b: 0, t: 0, x: 0 }, total = 0, info = [];
         ex.grid[code].forEach(function (s, mi) {
           for (var k = 0; k < 5; k++) {
@@ -261,11 +264,14 @@
             n[c] = (n[c] || 0) + 1; total++;
             var cls = OUT[c][1];
             if (shown === 'J' && 'awm'.indexOf(c) >= 0) cls = 'o-j';
-            el('i', { class: 'dot ' + cls }, grid);
+            el('i', { class: 'dot ' + cls + (mi === ex.featured_index ? ' feat' : '') }, grid);
             info.push([D.models[mi].name, k, shown === 'J' && 'awm'.indexOf(c) >= 0 ? 'answered' : OUT[c][0]]);
           }
         });
         gridReader(grid, info);
+        // pointing at the answer button lights up that model's column
+        ['mouseenter', 'focus'].forEach(function (ev) { tog.addEventListener(ev, function () { outc.classList.add('feat-on'); }); });
+        ['mouseleave', 'blur'].forEach(function (ev) { tog.addEventListener(ev, function () { outc.classList.remove('feat-on'); }); });
         var refused = n.r + n.b, mis = n.m + n.w;
         var share = el('div', { class: 'outcome-share' }, outc);
         if (shown === 'J') {
