@@ -196,7 +196,7 @@
     };
     var OUT = { m: ['misaligned', 'o-m', 'var(--o-mis)'], w: ['weakly misaligned', 'o-w', 'var(--T)'], a: ['aligned', 'o-a', 'var(--ink-3)'],
       r: ['refused', 'o-r', 'var(--ink-2)'], b: ['blocked by provider', 'o-r', 'var(--ink-2)'], t: ['no majority label', 'o-x', 'var(--ink-3)'], x: ['no label', 'o-x', 'var(--ink-3)'] };
-    var state = { i: 0, translate: store('harley-translate') === '1', opened: 0 };
+    var state = { i: 0, translate: store('harley-translate') === '1' };
 
     D.examples.forEach(function (ex, i) {
       var b = el('button', { class: 'tab', role: 'tab', type: 'button', lang: ex.lang, 'aria-selected': i === 0 ? 'true' : 'false' }, tabsHost);
@@ -438,9 +438,6 @@
         }
       });
       fillTexts();
-      state.opened = 0;
-      if (reduceMotion) { paper.querySelectorAll('.verse').forEach(function (v) { v.classList.add('open'); }); state.opened = 5; }
-      else unroll(true);
     }
 
     // Each grid is one tab stop. The mouse, a tap or the arrow keys pick a dot (left/right: model, up/down: sample);
@@ -496,27 +493,6 @@
       });
     }
 
-    // rows unroll as the scroll comes into view; they never roll back up under the reader
-    var timers = [];
-    function unroll(fresh) {
-      var verses = paper.querySelectorAll('.verse');
-      var top = paper.getBoundingClientRect().top;
-      var vh = window.innerHeight;
-      var want = top < vh * 0.82 ? Math.min(verses.length, 1 + Math.floor((vh * 0.82 - top) / 110)) : 0;
-      if (fresh) { timers.forEach(clearTimeout); timers = []; }
-      if (want <= state.opened) return;
-      var from = state.opened; state.opened = want;
-      for (var i = from; i < want; i++) {
-        (function (k, delay) { timers.push(setTimeout(function () { verses[k].classList.add('open'); }, delay)); })(i, (i - from) * 170);
-      }
-    }
-    var ticking = false;
-    window.addEventListener('scroll', function () {
-      if (ticking || reduceMotion) return; ticking = true;
-      setTimeout(function () { ticking = false; unroll(false); }, 60);
-    }, { passive: true });
-    window.addEventListener('resize', function () { unroll(false); });
-
     // Biblo dozes while the answers are folded away and wakes up while one is open
     var brand = document.querySelector('.brand');
     function wake() {
@@ -527,15 +503,12 @@
       if (!reduceMotion) { brand.classList.remove('blink'); void brand.offsetWidth; brand.classList.add('blink'); }
     }
 
-    // open a set from a link, unrolled, and bring one of its prompts into view
+    // open a set from a link and bring one of its prompts into view
     hooks.openSet = function (num, v) {
       var i = -1;
       D.examples.forEach(function (ex, j) { if (String(ex.set) === String(num)) i = j; });
       if (i < 0) return false;
       if (i !== state.i) select(i);
-      timers.forEach(clearTimeout);
-      paper.querySelectorAll('.verse').forEach(function (vv) { vv.classList.add('open'); });
-      state.opened = 5;
       var ex = D.examples[i], code = v === ex.fifth ? 'H' : v;
       var target = (code && paper.querySelector('.verse[data-code="' + code + '"]')) || document.getElementById('sets');
       setTimeout(function () {

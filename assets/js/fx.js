@@ -1,5 +1,5 @@
-/* HARLEY: three small touches on top of main.js, which they decorate but never change.
-   A ship sails to the tree as you scroll, a serpent circles the rings, and the scroll unrolls verse by verse.
+/* HARLEY: two small touches on top of main.js, which they decorate but never change.
+   A ship sails to the tree as you scroll and a serpent circles the rings.
    Off for prefers-reduced-motion and for ?calm in the URL. */
 (function () {
   'use strict';
@@ -100,19 +100,6 @@
           'M' + tx.toFixed(1) + ' ' + ty.toFixed(1) + 'l' + (Math.cos(dir + .5) * 4).toFixed(1) + ' ' + (Math.sin(dir + .5) * 4).toFixed(1));
       } else tongue.setAttribute('d', '');
     };
-  }
-
-  /* ---------------- the scroll: rollers turn while a verse unrolls ---------------- */
-  var scrollEl = document.getElementById('scroll'), paper = document.getElementById('paper');
-  if (scrollEl && paper) {
-    var rollTimer = 0;
-    new MutationObserver(function (muts) {
-      var opened = muts.some(function (m) { return m.target.classList && m.target.classList.contains('verse') && m.target.classList.contains('open'); });
-      if (!opened) return;
-      scrollEl.classList.add('fx-rolling'); clearTimeout(rollTimer);
-      rollTimer = setTimeout(function () { scrollEl.classList.remove('fx-rolling'); }, 900);
-      scrollEl.classList.remove('fx-bump'); void scrollEl.offsetWidth; scrollEl.classList.add('fx-bump');
-    }).observe(paper, { subtree: true, attributes: true, attributeFilter: ['class'] });
   }
 
   /* ---------------- one loop for both ---------------- */
