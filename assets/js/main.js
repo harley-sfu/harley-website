@@ -635,7 +635,7 @@
       var span = hi - lo, zero = 100 * (0 - lo) / span;
       var rows = D.models.map(function (m) { return { id: m.id, name: m.name, v: m.refusal[key] }; });
       rows.push({ name: 'All 17 models', v: pooledVal, pooled: true });
-      rows.forEach(function (r) {
+      var items = rows.map(function (r) {
         var row = el('div', { class: 'bar-row' + (r.pooled ? ' pooled' : '') }, h);
         if (r.id) row.setAttribute('data-model', r.id);
         el('div', { class: 'bar-label', text: r.name }, row);
