@@ -106,12 +106,6 @@
     document.querySelectorAll('main > section[id]').forEach(function (s) { navIO.observe(s); });
   }
 
-  document.querySelectorAll('.chapter-head').forEach(function (h) {
-    if (reduceMotion) return;
-    h.classList.add('fade');
-    onVisible(h, function () { h.classList.add('in'); }, 0.2);
-  });
-
   /* ---------------- hero: the benchmark as tree rings ---------------- */
   (function rings() {
     var host = document.getElementById('rings');
