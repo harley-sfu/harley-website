@@ -275,12 +275,14 @@
         var refused = n.r + n.b, mis = n.m + n.w;
         var share = el('div', { class: 'outcome-share' }, outc);
         if (shown === 'J') {
-          share.innerHTML = '<span><b class="c-J">' + Math.round(100 * (total - refused) / total) + '%</b> answered</span><span><b>' + Math.round(100 * refused / total) + '%</b> refused</span>';
+          share.innerHTML = '<span><b class="c-J">' + Math.round(100 * (total - refused) / total) + '%</b> are answered</span><span><b>' + Math.round(100 * refused / total) + '%</b> are refused</span>';
           grid.setAttribute('aria-label', refused + ' of ' + total + ' responses refused. The marked column is ' + model.name + '. Arrow keys step through them.');
         } else {
-          share.innerHTML = '<span><b class="c-T">' + Math.round(100 * mis / total) + '%</b> misaligned</span><span><b>' + Math.round(100 * refused / total) + '%</b> refused</span>';
+          share.innerHTML = '<span><b class="c-T">' + Math.round(100 * mis / total) + '%</b> are misaligned</span><span><b>' + Math.round(100 * refused / total) + '%</b> are refused</span>';
           grid.setAttribute('aria-label', mis + ' of ' + total + ' responses misaligned, ' + refused + ' refused. The marked column is ' + model.name + '. Arrow keys step through them.');
         }
+        // tie the percentages to the dots just above them
+        share.insertAdjacentHTML('afterbegin', '<span class="share-of">Of these ' + total + ' answers:</span>');
       });
       fillTexts();
     }
