@@ -32,14 +32,6 @@
   function store(key, val) {
     try { if (val === undefined) return localStorage.getItem(key); localStorage.setItem(key, val); } catch (e) { return null; }
   }
-  function mulberry32(a) {
-    return function () {
-      a |= 0; a = a + 0x6D2B79F5 | 0;
-      var t = Math.imul(a ^ a >>> 15, 1 | a);
-      t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t;
-      return ((t ^ t >>> 14) >>> 0) / 4294967296;
-    };
-  }
   function onVisible(node, fn, threshold) {
     if (!('IntersectionObserver' in window)) { fn(); return; }
     var io = new IntersectionObserver(function (entries) {
@@ -106,78 +98,48 @@
     document.querySelectorAll('main > section[id]').forEach(function (s) { navIO.observe(s); });
   }
 
-  /* ---------------- hero: the benchmark as tree rings ---------------- */
-  (function rings() {
-    var host = document.getElementById('rings');
-    var C = 240, R0 = 66, R1 = 226;
-    var gold = D.rings.filter(function (r) { return r.gold > 0; }).sort(function (a, b) { return (a.gold + a.silver) - (b.gold + b.silver); });
-    var rest = D.rings.filter(function (r) { return r.gold === 0; }).sort(function (a, b) { return a.silver - b.silver; });
-    var order = gold.concat(rest);
-    var step = (R1 - R0) / (order.length - 1);
-    var rnd = mulberry32(1591);
+  /* ---------------- hero: sets per language, as bars ---------------- */
+  (function langBars() {
+    var host = document.getElementById('langbars');
+    var W = 480, LX = 96, BX = 104, BMAX = 330, TOP = 44, ROW = 23, BH = 13, GAP = 2;
+    var order = D.rings.slice().sort(function (a, b) { return (b.gold + b.silver) - (a.gold + a.silver); });
+    var max = order[0].gold + order[0].silver;
+    var goldTotal = 0, silverTotal = 0;
+    order.forEach(function (l) { goldTotal += l.gold; silverTotal += l.silver; });
+    host.setAttribute('viewBox', '0 0 ' + W + ' ' + (TOP + order.length * ROW + 4));
 
-    svg('circle', { cx: C, cy: C, r: R0 + step * (gold.length - 0.5), class: 'heart' }, host);
+    // legend: two series, so it is always shown
+    var lg = svg('g', { class: 'legend' }, host);
+    svg('rect', { x: BX, y: 8, width: 12, height: 10, rx: 2, class: 'bar gold' }, lg);
+    svg('text', { x: BX + 18, y: 17, class: 'legend-lab' }, lg).textContent = 'Gold · ' + goldTotal.toLocaleString('en-US') + ' human-reviewed';
+    svg('rect', { x: BX + 196, y: 8, width: 12, height: 10, rx: 2, class: 'bar silver' }, lg);
+    svg('text', { x: BX + 214, y: 17, class: 'legend-lab' }, lg).textContent = 'Silver · ' + silverTotal.toLocaleString('en-US');
 
-    function wobble(i) {
-      var ph1 = rnd() * 6.28, ph2 = rnd() * 6.28, amp = 0.9 + i * 0.07;
-      return function (t) { return amp * (Math.sin(3 * t + ph1) * 0.6 + Math.sin(7 * t + ph2) * 0.4); };
-    }
-    var groups = [];
+    var rows = [];
     order.forEach(function (lang, i) {
-      var r = R0 + i * step, w = wobble(i);
-      var g = svg('g', { class: 'lang grow' }, host);
-      var d = '';
-      for (var a = 0; a <= 360; a += 3) {
-        var t = a * Math.PI / 180, rr = r + w(t);
-        d += (a ? 'L' : 'M') + (C + rr * Math.cos(t)).toFixed(2) + ' ' + (C + rr * Math.sin(t)).toFixed(2);
+      var y = TOP + i * ROW, n = lang.gold + lang.silver;
+      var g = svg('g', { class: 'lang', tabindex: '0', role: 'img',
+        'aria-label': lang.language + ': ' + n + ' sets, ' + lang.gold + ' gold, ' + lang.silver + ' silver' }, host);
+      svg('rect', { x: 0, y: y - 4, width: W, height: ROW, class: 'row-hit' }, g);
+      svg('text', { x: LX, y: y + BH - 3, class: 'lang-lab' }, g).textContent = lang.language;
+      var bars = svg('g', null, g);
+      var gw = lang.gold / max * BMAX, sw = lang.silver / max * BMAX;
+      if (lang.gold) svg('rect', { x: BX, y: y, width: Math.max(0, gw - (lang.silver ? GAP : 0)).toFixed(2), height: BH, rx: 2, class: 'bar gold' }, bars);
+      if (lang.silver) svg('rect', { x: (BX + gw).toFixed(2), y: y, width: Math.max(1, sw).toFixed(2), height: BH, rx: 2, class: 'bar silver' }, bars);
+      svg('text', { x: (BX + gw + sw + 6).toFixed(2), y: y + BH - 3, class: 'count' }, g).textContent = n;
+      if (lang.gold) svg('text', { x: BX + 4, y: y + BH - 3, class: 'gold-count' }, g).textContent = lang.gold;
+      function on() {
+        focusLang(i);
+        tipFor(bars, '<b>' + lang.language + '</b> · ' + n + ' sets<br>' + lang.gold + ' gold · ' + lang.silver + ' silver');
+        say(g.getAttribute('aria-label'));
       }
-      svg('path', { d: d + 'Z', class: 'ring' }, g);
-      var n = lang.gold + lang.silver, off = rnd() * Math.PI * 2;
-      // the reviewed (gold) sets sit at random places on their ring, like knots in the grain
-      var slots = []; for (var q = 0; q < n; q++) slots.push(q);
-      for (var q2 = n - 1; q2 > 0; q2--) { var z = Math.floor(rnd() * (q2 + 1)); var tq = slots[q2]; slots[q2] = slots[z]; slots[z] = tq; }
-      var goldSet = {}; slots.slice(0, lang.gold).forEach(function (s) { goldSet[s] = true; });
-      for (var k = 0; k < n; k++) {
-        var isGold = !!goldSet[k];
-        var t2 = off + (k + (rnd() - 0.5) * 0.55) * (Math.PI * 2 / n);
-        var rr2 = r + w(t2), len = isGold ? 4.2 : 3.2;
-        svg('line', {
-          x1: (C + (rr2 - len) * Math.cos(t2)).toFixed(2), y1: (C + (rr2 - len) * Math.sin(t2)).toFixed(2),
-          x2: (C + (rr2 + len) * Math.cos(t2)).toFixed(2), y2: (C + (rr2 + len) * Math.sin(t2)).toFixed(2),
-          class: 'mark ' + (isGold ? 'gold' : 'silver')
-        }, g);
-      }
-      var hit = svg('circle', { cx: C, cy: C, r: r, class: 'ring-hit' }, g);
-      hit.addEventListener('mouseenter', function () { focusLang(i); });
-      hit.addEventListener('mouseleave', function () { focusLang(-1); });
-      hit.addEventListener('click', function () { focusLang(i); });
-      groups.push({ g: g, lang: lang });
+      g.addEventListener('mouseenter', on); g.addEventListener('focus', on);
+      g.addEventListener('mouseleave', function () { focusLang(-1); hideTip(); });
+      g.addEventListener('blur', function () { focusLang(-1); hideTip(); });
+      rows.push({ g: g });
     });
-    var num = svg('text', { x: C, y: C + 6, class: 'center-num' }, host);
-    var lab = svg('text', { x: C, y: C + 26, class: 'center-lab' }, host);
-    var lab2 = svg('text', { x: C, y: C - 30, class: 'center-lab' }, host);
-    function setCenter(a, b, c) { num.textContent = a; lab.textContent = b; lab2.textContent = c || ''; }
-    setCenter('1,591', 'sets', '17 languages');
     function focusLang(i) {
-      groups.forEach(function (x, j) { x.g.classList.toggle('dim', i >= 0 && j !== i); x.g.classList.toggle('on', j === i); });
-      if (i < 0) { setCenter('1,591', 'sets', '17 languages'); return; }
-      var L = groups[i].lang;
-      setCenter(String(L.gold + L.silver), L.language, L.gold ? L.gold + ' reviewed' : 'model-reviewed');
-    }
-    host.addEventListener('mouseleave', function () { focusLang(-1); });
-
-    if (!reduceMotion) {
-      var heart = host.querySelector('.heart');
-      heart.style.opacity = '0'; heart.style.transition = 'opacity 1.6s ease .2s';
-      groups.forEach(function (x, i) {
-        x.g.style.opacity = '0'; x.g.style.transform = 'scale(.94)';
-        x.g.style.transition = 'opacity .9s ease ' + (0.15 + i * 0.07) + 's, transform 1.2s cubic-bezier(.2,.7,.2,1) ' + (0.15 + i * 0.07) + 's';
-      });
-      host.getBoundingClientRect();
-      setTimeout(function () {
-        heart.style.opacity = '';
-        groups.forEach(function (x) { x.g.style.opacity = ''; x.g.style.transform = ''; });
-      }, 40);
+      rows.forEach(function (x, j) { x.g.classList.toggle('dim', i >= 0 && j !== i); x.g.classList.toggle('on', j === i); });
     }
   })();
 
