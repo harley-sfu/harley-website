@@ -236,6 +236,11 @@ h3 { margin: 0 0 12px; font: 600 13px/1.4 var(--sans); letter-spacing: .14em; te
 /* ---------- the scroll ---------- */
 .scroll-controls { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin: 40px 0 18px; flex-wrap: wrap; }
 .tabs { display: flex; gap: 6px; flex-wrap: wrap; }
+.dots-note { margin: -4px 0 18px; font-size: 13px; line-height: 1.5; color: var(--ink-3); }
+.dots-note b { color: var(--ink-2); font-weight: 600; }
+.dots-note .mini { display: inline-grid; grid-template-columns: repeat(3, 5px); grid-template-rows: repeat(2, 5px); gap: 1.5px; vertical-align: -1px; margin-right: 6px; }
+.dots-note .mini i { width: 5px; height: 5px; border-radius: 50%; background: var(--o-ok); }
+.dots-note .mini i:nth-child(2) { background: var(--o-mis); }
 .tab {
   border: 1px solid var(--rule); background: transparent; color: var(--ink-2); cursor: pointer;
   border-radius: 999px; padding: 7px 16px 7px 14px; font: 500 14px/1.2 var(--sans);
