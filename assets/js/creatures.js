@@ -341,12 +341,9 @@
      starts at the snout, runs through the eye and keeps going all the way down, and small
      crosses in pairs either side of it down the thick of the body. The skull
      narrows into the neck, and from there it tapers in one long sweep: like Jormungandr it is
-     long, the tail a thread half way round the rings. Now and then it breathes a little
-     hellfire. One lap takes 90 seconds. */
+     long, the tail a thread half way round the rings. One lap takes 90 seconds. */
   var HEAD =
     '<path class="sp-horn" d="M2 -5C-1 -10 -5 -12.5 -10 -12.5M6 -6.2C4 -11.6 1 -14.6 -3.6 -15.6"/>' +
-    '<g class="sp-fire"><path class="sp-fire-o" d="M21.5 1.6C26 -1.8 30 1.4 34.5 -1.4C31.8 2 33.4 3.8 36.6 5C31 6 27 5.6 21.5 3.6Z"/>' +
-      '<path class="sp-fire-i" d="M22 2.2C25 1.2 27.5 2.6 30 2C28.2 3.2 28.8 4 30.2 4.6C27.2 4.8 24.6 4.2 22 3Z"/></g>' +
     '<path class="sp-skin" d="M-10 -4C-5 -4.1 0 -7.2 5 -7.9C9 -8.5 11 -8.1 14 -6.8C18.6 -5.4 22.2 -3.6 22.8 -1.4C23 -.4 22.4 0 21.4 .1L6 .9L6 1.6L20.4 4.2C21.4 5.4 20.6 7.2 18 7.6C11 8.4 5 8 1 6.8C-3 5.4 -6 4.1 -10 4Z"/>' +
     '<path class="sp-mouth" d="M6 .9L21.4 .1C21.6 1.6 21.2 3.2 20.4 4.2L6 1.6Z"/>' +
     '<g class="sp-teeth"><circle cx="10" cy="1.2" r=".9"/><circle cx="13.6" cy="1" r=".9"/><circle cx="17.2" cy=".8" r=".9"/>' +
@@ -450,7 +447,6 @@
 
       var h0 = P[0], ang = Math.atan2(P[0][1] - P[2][1], P[0][0] - P[2][0]) * 180 / Math.PI;   // aimed along the neck, so the skull's band meets the body's
       head.setAttribute('transform', 'translate(' + f(h0[0]) + ' ' + f(h0[1]) + ') rotate(' + f(ang) + ') scale(1.02)');
-      g.classList.toggle('breathe', !still && (t % 13) > 11.6);
     }
 
     var on = true, raf = 0, t0 = performance.now();
