@@ -158,6 +158,8 @@
     };
     var OUT = { m: ['misaligned', 'o-m', 'var(--o-mis)'], w: ['weakly misaligned', 'o-w', 'var(--T)'], a: ['aligned', 'o-a', 'var(--ink-3)'],
       r: ['refused', 'o-r', 'var(--ink-2)'], b: ['blocked by provider', 'o-r', 'var(--ink-2)'], t: ['no majority label', 'o-x', 'var(--ink-3)'], x: ['no label', 'o-x', 'var(--ink-3)'] };
+    // English leads the tabs; the other sets keep their order
+    D.examples.sort(function (a, b) { return (b.lang === 'en') - (a.lang === 'en'); });
     var state = { i: 0, translate: store('harley-translate') === '1' };
 
     D.examples.forEach(function (ex, i) {
