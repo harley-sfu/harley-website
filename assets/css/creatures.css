@@ -1,6 +1,5 @@
 /* HARLEY: paired with assets/js/creatures.js, which sets html.creatures-voyage / html.creatures-serpent
-   for the parts a page uses. The ship and serpent from fx.js step aside for them. */
-.creatures-voyage .fx-canvas, .creatures-serpent #rings .fx-snake { display: none; }
+   for the parts a page uses. */
 
 /* ---------- the Sunny's paint box (same in both themes: she is always yellow and red) ---------- */
 :root {

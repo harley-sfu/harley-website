@@ -1,7 +1,7 @@
 /* HARLEY: a Thousand Sunny that sails the top bar to Treasure Tree Adam as you scroll, and a
    serpent from the Elbaph mural that swims around the rings. Everything is SVG and every motion
    is driven by elapsed time, never by frame count. The page picks which ones to use with
-   data-parts on the script tag, and creatures.css hides the fx.js versions they replace.
+   data-parts on the script tag.
    ?calm turns it all off; reduced motion keeps the drawings but holds them still. */
 (function () {
   'use strict';

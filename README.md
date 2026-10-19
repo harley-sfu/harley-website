@@ -25,7 +25,7 @@ Then open http://localhost:8765.
 
 None of these run with reduced motion turned on; the content is all still there.
 
-**Three small touches** (`assets/css/fx.css`, `assets/js/fx.js`): a ship sails along the top towards the tree as you scroll, a serpent circles the rings, and the example scroll unrolls verse by verse with its rollers turning. They decorate `main.js` without changing it. Add `?calm` to the URL to switch them off; they're also off for anyone with reduced motion enabled. The full over-the-top version is kept on the `over-the-top` branch.
+**Two small touches** (`assets/css/creatures.css`, `assets/js/creatures.js`): the Thousand Sunny sails along the top bar towards the tree as you scroll, and a serpent circles the rings. They decorate `main.js` without changing it. Add `?calm` to the URL to switch them off; with reduced motion they're drawn but hold still. The full over-the-top version is kept on the `over-the-top` branch.
 
 ## Page sections
 
