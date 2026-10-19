@@ -669,7 +669,6 @@
   (function prophecy() {
     var host = document.getElementById('barcode');
     var input = document.getElementById('cutoff');
-    var wrap = host.parentNode;
     var P = D.screening.prompts, N = P.length, POS = D.screening.positives;
     var X0 = 6, X1 = 994, YT = 14, YB = 150;
     function x(i) { return X0 + (X1 - X0) * (i / (N - 1)); }
@@ -692,9 +691,7 @@
       return svg('line', { x1: x(i), x2: x(i), y1: p[2] ? 164 : 196, y2: 216, class: 'tick' + (p[2] ? ' pos' : '') }, host);
     });
     var cut = svg('line', { x1: 0, x2: 0, y1: YT - 8, y2: 218, class: 'cut' }, host);
-    // the handle is a Log Pose: its needle points at the next frontier failure still ahead of the cutoff
     var handle = el('div', { class: 'handle' }, null);
-    var needle = el('i', { class: 'needle' }, handle);
     input.insertAdjacentElement('afterend', handle);
 
     // the six frontier models, each with one pip per target prompt that broke it
@@ -744,7 +741,7 @@
       cut.setAttribute('x1', xx); cut.setAttribute('x2', xx);
       ticks.forEach(function (t, i) { if (P[i][2]) t.classList.toggle('out', i >= kk); });
       handle.style.left = (100 * xx / 1000) + '%';
-      handle.style.top = (y(kk) - 11) + 'px';
+      handle.style.top = (y(kk) - 7) + 'px';
       roK.textContent = kk; roKp.textContent = Math.floor(100 * kk / N);
       roF.textContent = cum[kk]; roFp.textContent = Math.round(100 * cum[kk] / POS);
       input.value = kk;
@@ -754,32 +751,9 @@
         e.count.textContent = found + ' of ' + e.mine.length;
         e.card.setAttribute('aria-label', e.name + ': ' + found + ' of ' + e.mine.length + ' failures found in the top ' + kk);
       });
-      var next = -1;
-      for (var i = kk; i < N; i++) if (P[i][2]) { next = i; break; }
-      var W = wrap.clientWidth, deg = 0;
-      if (next >= 0 && W) {
-        var dx = W * (x(next) - xx) / 1000, dy = 172 - y(kk);
-        deg = Math.atan2(dx, -dy) * 180 / Math.PI;
-      }
-      handle.classList.toggle('home', next < 0);
-      needle.style.transform = 'rotate(' + deg.toFixed(1) + 'deg)';
     }
     input.addEventListener('input', function () { update(+input.value); });
-    var TARGET = Math.round(N / 3);
-    update(TARGET);
-    if (!reduceMotion) {
-      update(1);
-      onVisible(wrap, function () {
-        var t0 = null, dur = 1600;
-        function frame(ts) {
-          if (!t0) t0 = ts;
-          var p = Math.min(1, (ts - t0) / dur), e = 1 - Math.pow(1 - p, 3);
-          update(1 + (TARGET - 1) * e);
-          if (p < 1) requestAnimationFrame(frame);
-        }
-        requestAnimationFrame(frame);
-      }, 0.5);
-    }
+    update(Math.round(N / 3));
   })();
 
   /* ---------------- links: #set=814, #set=814&v=T, #model=kimi-k3 ---------------- */

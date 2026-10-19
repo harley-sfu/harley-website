@@ -478,19 +478,9 @@ h3 { margin: 0 0 12px; font: 600 13px/1.4 var(--sans); letter-spacing: .14em; te
   position: absolute; inset: 0; width: 100%; height: 100%; margin: 0; opacity: 0; cursor: ew-resize;
 }
 .barcode-wrap .handle {
-  position: absolute; top: -8px; width: 26px; height: 26px; margin-left: -13px; border-radius: 50%;
-  background: radial-gradient(circle at 35% 30%, color-mix(in srgb, var(--surface) 40%, white), var(--surface) 70%);
-  border: 1.5px solid var(--ink); pointer-events: none;
-  display: grid; place-items: center; box-shadow: 0 2px 6px rgba(0,0,0,.12);
+  position: absolute; top: -8px; width: 14px; height: 14px; margin-left: -7px; border-radius: 50%;
+  background: var(--surface); border: 2px solid var(--ink); pointer-events: none;
 }
-/* the Log Pose needle: red tip toward the next failure, upright once all are found */
-.barcode-wrap .handle .needle {
-  grid-area: 1 / 1; width: 8px; height: 21px;
-  clip-path: polygon(50% 0, 100% 50%, 50% 100%, 0 50%);
-  background: linear-gradient(90deg, rgba(0,0,0,.18) 50%, transparent 50%), linear-gradient(var(--T) 50%, var(--ink-2) 50%);
-  transition: transform .35s cubic-bezier(.3,1.5,.5,1);
-}
-.barcode-wrap .handle::after { content: ""; grid-area: 1 / 1; width: 3px; height: 3px; border-radius: 50%; background: var(--ink); }
 #cutoff:focus-visible + .handle { outline: 2px solid var(--A); outline-offset: 3px; }
 .axis-labels { display: flex; justify-content: space-between; margin-top: 8px; font-size: 12px; color: var(--ink-3); letter-spacing: .04em; }
 .prophecy figcaption { margin-top: 14px; font-size: 13px; color: var(--ink-3); max-width: 680px; }
