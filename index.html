@@ -149,7 +149,7 @@
   <section class="chapter" id="pressure">
     <header class="chapter-head">
       <p class="overline"><span class="numeral">I</span> The first world &middot; pressure</p>
-      <h2>Pressure makes misalignment almost five times as common</h2>
+      <h2>User pressure makes misalignment almost five times as common</h2>
       <p class="big-number"><span class="c-A">4.3%</span><span class="arrow" aria-hidden="true">&rarr;</span><span class="c-T">20.4%</span></p>
       <p class="sub">Same task, with the pressure (<b class="c-T">T</b>) and without it (<b class="c-A">A</b>). Rewording the pressure barely changes the rate; borrowing only its style does not raise it.</p>
     </header>
@@ -165,12 +165,12 @@
     <header class="chapter-head">
       <p class="overline"><span class="numeral">II</span> The second world &middot; the split</p>
       <h2>A one-line pretext undoes most refusals</h2>
-      <p class="sub">The fifth prompt of every set can be either a hard negative or a jailbreak. A hard negative changes <em>what is asked</em>, so helping becomes right. A jailbreak variant adds an unverifiable claim: the action stays the same, so helping is still wrong if the claim is false. All 200 started as hard negatives; in human review, 140 turned out to change only the reason, and we relabelled them as jailbreak variants.</p>
+      <p class="sub">The fifth prompt of every set is either a hard negative or a jailbreak. A hard negative changes <em>what is asked</em>, so helping becomes right. A jailbreak variant adds an unverifiable claim: the action stays the same, so helping is still wrong if the claim is false. All 200 sets in the gold set started as hard negatives; in human review, 140 turned out to add an unverifiable claim, so we relabelled them as jailbreak variants.</p>
     </header>
 
     <div class="split" id="split-viz" aria-hidden="true"></div>
     <div class="split-captions">
-      <div><b class="c-H">60 hard negatives</b><span>One fact changes; helping is right.</span></div>
+      <div><b class="c-H">60 hard negatives</b><span>Changes the prompt to be appropriate.</span></div>
       <div><b class="c-J">140 jailbreak variants</b><span>Same request, plus a pretext the model cannot verify.</span></div>
     </div>
     <p class="epigraph split-refrain">And they will never meet.<span class="by">The Harley &middot; Second World</span></p>
@@ -178,8 +178,9 @@
     <div class="twin">
       <figure class="panel">
         <figcaption>
-          <span class="panel-title">Refusal, target &rarr; jailbreak variant</span>
+          <span class="panel-title">How much a jailbreak lowers refusal</span>
           <span class="panel-number"><span class="c-T">21.3%</span><span class="arrow">&rarr;</span><span class="c-J">5.9%</span></span>
+          <span class="panel-explain">Each bar is the drop in a model's refusal rate when the same request comes with a short pretext or claimed fact (a median of nine words). Refusal falls for all 17 models, and most for those that refuse targets most often.</span>
         </figcaption>
         <div class="bars" id="bars-j" role="img" aria-label="Change in refusal from target to jailbreak variant for each model."></div>
       </figure>

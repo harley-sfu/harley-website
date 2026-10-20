@@ -435,8 +435,8 @@ h3 { margin: 0 0 12px; font: 600 13px/1.4 var(--sans); letter-spacing: .14em; te
 .epigraph.world-verse { margin: 56px auto 0; max-width: 900px; }
 .epigraph.split-refrain { margin: 48px auto 56px; }
 
-.twin { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; margin-top: 48px; }
-.panel { margin: 0; }
+.twin { display: grid; grid-template-columns: 1fr 1fr; column-gap: 40px; margin-top: 48px; }
+.panel { margin: 0; display: grid; grid-row: span 2; grid-template-rows: subgrid; }
 .panel figcaption { display: flex; flex-direction: column; gap: 6px; margin-bottom: 14px; }
 .panel-title { font: 600 12px/1.4 var(--sans); letter-spacing: .12em; text-transform: uppercase; color: var(--ink-3); }
 .panel-number { font: 500 36px/1 var(--serif); display: flex; gap: 10px; align-items: baseline; font-variant-numeric: lining-nums; }
@@ -576,7 +576,8 @@ h3 { margin: 0 0 12px; font: 600 13px/1.4 var(--sans); letter-spacing: .14em; te
   .chip { width: 32px; height: 32px; font-size: 17px; }
   .outcomes { grid-column: 2; }
   .prompt { font-size: 16.5px; }
-  .twin { grid-template-columns: 1fr; gap: 48px; }
+  .twin { grid-template-columns: 1fr; }
+  .twin .panel + .panel { margin-top: 48px; }
   .coda-grid { grid-template-columns: minmax(0, 1fr); gap: 36px; }
   .reading-stats, .reading-notes, .intro-notes, .intro-variants dl { grid-template-columns: minmax(0, 1fr); gap: 28px; }
   .db-row, .db-axis { grid-template-columns: 116px minmax(0, 1fr) 42px; gap: 8px; }
