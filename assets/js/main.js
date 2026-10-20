@@ -461,16 +461,13 @@
         items.forEach(function (it, i) {
           setTimeout(function () {
             var w = 100 * Math.abs(it.r.v) / span;
-            // value label: outside the bar end when there is room, inside a long bar, else on the far side of zero
+            // value label always sits just past the bar end; the axis ranges leave room for it
             if (it.r.v < 0) {
               it.b.style.left = (zero - w) + '%'; it.b.style.width = w + '%';
-              if (w > 22) { it.v.style.left = 'calc(' + (zero - w) + '% + 6px)'; it.v.classList.add('inside'); }
-              else if (zero - w > 16) { it.v.style.left = 'calc(' + (zero - w) + '% - 6px)'; it.v.style.transform = 'translate(-100%, -50%)'; }
-              else { it.v.style.left = 'calc(' + zero + '% + 6px)'; }
+              it.v.style.left = 'calc(' + (zero - w) + '% - 6px)'; it.v.style.transform = 'translate(-100%, -50%)';
             } else {
               it.b.style.width = w + '%';
-              if (zero + w < 84) { it.v.style.left = 'calc(' + (zero + w) + '% + 6px)'; }
-              else { it.v.style.left = 'calc(' + (zero + w) + '% - 6px)'; it.v.style.transform = 'translate(-100%, -50%)'; it.v.classList.add('inside'); }
+              it.v.style.left = 'calc(' + (zero + w) + '% + 6px)';
             }
             it.v.style.opacity = '1';
           }, reduceMotion ? 0 : 45 * i);
@@ -479,8 +476,8 @@
       if (reduceMotion) play2(); else onVisible(h, play2, 0.25);
     }
     // same points-per-pixel in both panels
-    bars('bars-j', 'JT', 'j', -31, 3, D.paper.jsets_refusal.diff);
-    bars('bars-h', 'HA', 'h', -3, 31, D.paper.hsets_refusal.diff);
+    bars('bars-j', 'JT', 'j', -36, 8, D.paper.jsets_refusal.diff);
+    bars('bars-h', 'HA', 'h', -8, 36, D.paper.hsets_refusal.diff);
   })();
 
   /* ---------------- III: prophecy (screening) ---------------- */
