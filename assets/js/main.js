@@ -514,7 +514,7 @@
     var emHost = document.getElementById('emperors');
     if (F && P[0].length > 3 && emHost) {
       emHost.hidden = false;
-      el('p', { class: 'emperors-head', html: 'Six emperors of the sea <span>&middot; frontier models, and the targets that broke each one</span>' }, emHost);
+      el('p', { class: 'emperors-head', html: 'The six <span>&middot; each frontier model&rsquo;s failures caught so far</span>' }, emHost);
       var list = el('div', { class: 'emperor-list' }, emHost);
       F.forEach(function (name, b) {
         var mine = []; P.forEach(function (p, i) { if (p[3] >> b & 1) mine.push(i); });
@@ -563,7 +563,7 @@
       emperors.forEach(function (e) {
         var found = 0;
         e.mine.forEach(function (i, j) { var f = i < kk; e.pips[j].classList.toggle('found', f); if (f) found++; });
-        e.count.textContent = found + ' of ' + e.mine.length;
+        e.count.textContent = found + ' of ' + e.mine.length + ' caught';
         e.card.setAttribute('aria-label', e.name + ': ' + found + ' of ' + e.mine.length + ' failures found in the top ' + kk);
       });
     }
