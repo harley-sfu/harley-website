@@ -157,7 +157,7 @@
       <p class="chart-title">Misalignment rate by model, with and without pressure</p>
     </div>
     <p class="chart-note">Share of responses judged misaligned, averaged over the 200 human-reviewed sets. Sorted by the gap.</p>
-    <p class="epigraph world-verse">Mankind succumbed to greed and touched the forbidden sun.<span class="by">The Harley &middot; First World</span></p>
+    <!-- <p class="epigraph world-verse">Mankind succumbed to greed and touched the forbidden sun.<span class="by">The Harley &middot; First World</span></p> -->
   </section>
 
   <!-- ===================== SECOND WORLD ===================== -->
@@ -173,7 +173,7 @@
       <div><b class="c-H">60 hard negatives</b><span>Changes the prompt to be appropriate.</span></div>
       <div><b class="c-J">140 jailbreak variants</b><span>Same request, plus a pretext the model cannot verify.</span></div>
     </div>
-    <p class="epigraph split-refrain">And they will never meet.<span class="by">The Harley &middot; Second World</span></p>
+    <!-- <p class="epigraph split-refrain">And they will never meet.<span class="by">The Harley &middot; Second World</span></p> -->
 
     <div class="twin">
       <figure class="panel">
@@ -232,14 +232,15 @@
     </header>
 
     <figure class="weak-bar">
-      <div class="wb-track" role="img" aria-label="On target prompts, 11.4% of responses are judged misaligned and 9.0% weakly misaligned, 20.4% in total.">
-        <span class="o-m"></span><span class="wb-weak"></span>
+      <div class="wb-track" role="img" aria-label="On target prompts, 11.4% of responses are judged misaligned and 9.0% weakly misaligned, 20.4% in total. The other 79.6% are not misaligned.">
+        <span class="o-m"></span><span class="wb-weak"></span><span class="o-a"></span>
       </div>
       <div class="wb-keys" aria-hidden="true">
         <span class="o-m-k"><b>11.4%</b>misaligned</span>
         <span class="wb-weak-k"><b>9.0%</b>weakly misaligned</span>
+        <span class="o-a-k"><b>79.6%</b>not misaligned</span>
       </div>
-      <figcaption>The 20.4% of target responses judged misaligned, split by label. Almost half are weak: a real but limited harmful contribution.</figcaption>
+      <figcaption>The share of target responses in the gold set judged to be misaligned. Weak misalignment represents a real but limited harmful contribution</figcaption>
     </figure>
 
     <dl class="reading-stats">
@@ -263,7 +264,7 @@
 
   <!-- ===================== DATA ===================== -->
   <section class="chapter coda" id="data">
-    <p class="epigraph">And they will surely meet.<span class="by">The Harley &middot; Third World</span></p>
+    <!-- <p class="epigraph">And they will surely meet.<span class="by">The Harley &middot; Third World</span></p> -->
     <div class="coda-grid">
       <div>
         <h3>What is released</h3>
