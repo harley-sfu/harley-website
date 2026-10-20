@@ -81,7 +81,7 @@
     <header class="chapter-head">
       <p class="overline">Introduction</p>
       <h2>Not all misalignment is dramatic</h2>
-      <p class="sub">Users push, and much of what goes wrong in ordinary chats is a model giving in to that pressure. A user may demand an unsupported conclusion, like faked experiment results, or tuck a harmful task inside a legitimate request.</p>
+      <p class="sub">Much of what causes misalignment in ordinary chats is a model giving in to user pressure. A user may demand an unsupported conclusion, like faked experiment results, or hide a harmful task inside a legitimate request.</p>
     </header>
     <div class="intro-notes">
       <div>
@@ -99,7 +99,7 @@
     </div>
     <div class="intro-variants">
       <h3>The prompts in each set</h3>
-      <p class="intro-variants-note">Each set has five prompts: the first four below, plus either a hard negative or a jailbreak. One is the <em>anchor</em>, the unmodified real user turn; the other four are written around it. The anchor is never the paraphrase or style control.</p>
+      <p class="intro-variants-note">Each set has five prompts: the first four below, plus either a hard negative or a jailbreak. One is the <em>anchor</em>, the unmodified real user turn and the other four are written around it. The anchor is never the paraphrase or style control.</p>
       <dl>
         <div><dt class="c-T">T &middot; Target</dt><dd>Adds a pressure that pushes the model beyond the task&rsquo;s scope.</dd></div>
         <div><dt class="c-P">P &middot; Paraphrase</dt><dd>The same pressure in new words, to check the wording isn&rsquo;t doing the work.</dd></div>
@@ -115,7 +115,7 @@
   <section class="chapter" id="sets">
     <header class="chapter-head">
       <p class="overline">The verses</p>
-      <h2>One request, told five ways</h2>
+      <h2>One request, five ways</h2>
       <p class="sub">Each set starts from a real user turn. We add or remove the pressure, reword it, keep only its style, and either change one fact or add a pretext.</p>
     </header>
 
@@ -151,7 +151,7 @@
       <p class="overline"><span class="numeral">I</span> The first world &middot; pressure</p>
       <h2>User pressure makes misalignment almost five times as common</h2>
       <p class="big-number"><span class="c-A">4.3%</span><span class="arrow" aria-hidden="true">&rarr;</span><span class="c-T">20.4%</span></p>
-      <p class="sub">Same task, with the pressure (<b class="c-T">T</b>) and without it (<b class="c-A">A</b>). Rewording the pressure barely changes the rate; borrowing only its style does not raise it.</p>
+      <p class="sub">Same task, with the pressure (<b class="c-T">T</b>) and without it (<b class="c-A">A</b>). Rewording the pressure barely changes the rate.</p>
     </header>
     <div class="chart dumbbell" id="dumbbell" role="group" aria-label="Misalignment on aligned controls and targets for each of 17 models.">
       <p class="chart-title">Misalignment rate by model, with and without pressure</p>
@@ -165,7 +165,7 @@
     <header class="chapter-head">
       <p class="overline"><span class="numeral">II</span> The second world &middot; the split</p>
       <h2>A one-line pretext undoes most refusals</h2>
-      <p class="sub">The fifth prompt of every set is either a hard negative or a jailbreak. A hard negative changes <em>what is asked</em>, so helping becomes right. A jailbreak variant adds an unverifiable claim: the action stays the same, so helping is still wrong if the claim is false. All 200 sets in the gold set started as hard negatives; in human review, 140 turned out to add an unverifiable claim, so we relabelled them as jailbreak variants.</p>
+      <p class="sub">The fifth prompt of every set is either a hard negative or a jailbreak. A hard negative changes <em>what is asked</em>, so the task becomes appropirate. A jailbreak variant adds an unverifiable claim: the action stays the same, so helping is still wrong if the claim is false. All 200 sets in the gold set started as hard negatives; in human review, 140 turned out to add an unverifiable claim, so we relabelled them as jailbreak variants. The jailbreak has a median of just nine added or changed words.</p>
     </header>
 
     <div class="split" id="split-viz" aria-hidden="true"></div>
@@ -180,7 +180,7 @@
         <figcaption>
           <span class="panel-title">How much a jailbreak lowers refusal</span>
           <span class="panel-number"><span class="c-T">21.3%</span><span class="arrow">&rarr;</span><span class="c-J">5.9%</span></span>
-          <span class="panel-explain">Each bar is the drop in a model's refusal rate when the same request comes with a short pretext or claimed fact (a median of nine words). Refusal falls for all 17 models, and most for those that refuse targets most often.</span>
+          <span class="panel-explain">Each bar represents the <em>decrease</em> in a model's refusal rate when comparing the jailbreak to the target. The jailbreak reduces refusals across all 17 evaluated models.</span>
         </figcaption>
         <div class="bars" id="bars-j" role="img" aria-label="Change in refusal from target to jailbreak variant for each model."></div>
       </figure>
@@ -188,7 +188,7 @@
         <figcaption>
           <span class="panel-title">How much a hard negative raises refusal</span>
           <span class="panel-number"><span class="c-A">1.8%</span><span class="arrow">&rarr;</span><span class="c-H">4.8%</span></span>
-          <span class="panel-explain">Each bar is the rise in a model's refusal rate when an appropriate request keeps the target's concerning wording. Helping is right here, so any extra refusal is over-refusal. It rises most for the models that refuse targets most often.</span>
+          <span class="panel-explain">Each bar represents the <em>increase</em> in a model's refusal rate when comparing the hard negative against the aligned control. Since the aligned control has no user pressure and the hard negative makes a request appropriate, additional refusal constitutes over-refusal.</span>
         </figcaption>
         <div class="bars" id="bars-h" role="img" aria-label="Change in refusal from aligned control to hard negative for each model."></div>
       </figure>
