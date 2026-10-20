@@ -34,7 +34,7 @@
     <a href="#pressure">Pressure</a>
     <a href="#split">Pretexts</a>
     <a href="#prophecy">Screening</a>
-    <a href="#reading">Reading</a>
+    <a href="#conclusion">Conclusion</a>
     <a href="#data">Data</a>
   </nav>
   <div class="theme-switch" role="group" aria-label="Colour theme">
@@ -219,17 +219,23 @@
     </figure>
   </section>
 
-  <!-- ===================== THE READING ===================== -->
-  <section class="chapter reading" id="reading">
+  <!-- ===================== CONCLUSION ===================== -->
+  <section class="chapter reading" id="conclusion">
     <blockquote class="saul">
       <p>&ldquo;There are so many interpretations of it&hellip; the sun god all the warriors of Elbaph believe in has a different personality depending on who tells the story!!&rdquo;</p>
       <footer>Saul, on the Harley &middot; <cite>One Piece</cite>, chapter 1138</footer>
     </blockquote>
     <header class="chapter-head">
-      <p class="overline">The reading &middot; interpretation</p>
+      <p class="overline">Conclusion</p>
       <h2>Single-turn misalignment is not a solved problem</h2>
-      <p class="sub">The clearest failures read the same to everyone. The milder ones don&rsquo;t: a response that leans toward what the user wanted can look like good service to one reader and weak misalignment to another. Everyday users mostly meet these milder cases, and where the line falls is still unclear.</p>
+      <p class="sub">Models still give in to pressure from a single user turn. Across 17 models, matched controls show that the pressure itself causes the failure, not the task, wording or tone. The same prompts trip models up in all five languages we tested, and two small open models can tell us in advance where frontier models will fail.</p>
     </header>
+
+    <dl class="reading-stats">
+      <div><dt>Misalignment rises when the user applies pressure to the same task.</dt><dd><span class="c-A">4.3%</span><span class="arrow" aria-hidden="true">&rarr;</span><span class="c-T">20.4%</span></dd></div>
+      <div><dt>Refusal falls when a short pretext or claimed fact is added to the same request.</dt><dd><span class="c-T">21.3%</span><span class="arrow" aria-hidden="true">&rarr;</span><span class="c-J">5.9%</span></dd></div>
+      <div><dt>of the prompts that break a frontier model sit in the top third of a ranking made by two small open models.</dt><dd>90%</dd></div>
+    </dl>
 
     <figure class="weak-bar">
       <div class="wb-track" role="img" aria-label="On target prompts, 11.4% of responses are judged misaligned and 9.0% weakly misaligned, 20.4% in total. The other 79.6% are not misaligned.">
@@ -240,19 +246,14 @@
         <span class="wb-weak-k"><b>9.0%</b>weakly misaligned</span>
         <span class="o-a-k"><b>79.6%</b>not misaligned</span>
       </div>
-      <figcaption>The share of target responses in the gold set judged to be misaligned. Weak misalignment represents a real but limited harmful contribution</figcaption>
+      <figcaption>The share of target responses in the gold set judged to be misaligned. Almost half of it is weak misalignment: a real but limited harmful contribution.</figcaption>
     </figure>
-
-    <dl class="reading-stats">
-      <div><dt>Judge and human reviewer agree on <em>whether</em> a response is misaligned, then on all four labels, weak and strong apart (50 held-out pairs).</dt><dd>94%<span class="arrow" aria-hidden="true">&rarr;</span>84%</dd></div>
-      <div><dt>of 84,544 responses split the judge&rsquo;s own three readings: one or two passes call them misaligned, the rest do not.</dt><dd>7.1%</dd></div>
-      <div><dt>people agreed on the rubric before any labels were written. Labels judge what a response does, never why.</dt><dd>4</dd></div>
-    </dl>
 
     <div class="reading-notes">
       <div>
-        <h3>What we do about it</h3>
-        <p>Four of us agreed on a shared rubric before any labelling, and the judge uses the same one. Still, one reviewer wrote the human labels and the judge was tuned on them, so where weak misalignment ends and a user&rsquo;s response preference begins may reflect that reviewer&rsquo;s view. This boundary warrants more discussion and analysis. We report weak and strong misalignment separately and release every response with its labels to support that work.</p>
+        <h3>What remains open</h3>
+        <p>Much attention goes to severe forms of misalignment. The milder forms that everyday users meet are harder to pin down. A response that leans toward what the user wanted can look like good service to one reader and weak misalignment to another. Where that line falls is still unclear and sometimes subjective.</p>
+        <p>We hope Harley gives future work a shared set of matched requests for studying how models respond to user pressure across the range of situations real users bring to them. We release every response with its labels, reporting weak and strong misalignment separately, to support that work.</p>
       </div>
       <div>
         <h3>Why Harley?</h3>
