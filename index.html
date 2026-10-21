@@ -220,7 +220,11 @@
         <input id="cutoff" type="range" min="1" max="200" value="67" aria-label="Number of top-ranked prompts to test">
       </div>
       <div class="axis-labels"><span>ranked first</span><span>ranked last</span></div>
-      <figcaption><b>How to read it.</b> Each tick is one target prompt, ordered left to right from the one the small models fail most often to the one they fail least. Tall ticks are the 31 that broke a frontier model. Drag across the chart to choose how many prompts to test: the solid curve shows how many of the 31 you would find, and the dashed line shows what a random sampl would find. In a random sample the failures are spread evenly, so testing 33% of prompts would catch only about 33% of them; the gap between the two lines is how much the ranking beats chance. The cards above show which of the 31 broke each frontier model; hover or click one to highlight its ticks. Overall the ranking scores an AUC of 0.88, where 1 would put all 31 first and 0.5 is no better than chance. On the matched <span class="c-A">aligned controls</span> it drops to 0.68, so the small models are picking up the pressure, not just the topic.</figcaption>
+      <figcaption>
+        <p><b>How to read it.</b> Each tick is a target prompt, ordered left to right from the one the small models fail most often to the one they fail least. Tall ticks are the 31 that broke a frontier model.</p>
+        <p>Drag to choose how many prompts to test. The solid curve counts the failures you'd catch; the dashed line is a random order, where testing 33% of prompts should catch about 33% of failures. The gap between the two lines is how much the ranking beats chance. Hover or click a card above to highlight that model's failures.</p>
+        <p>Overall AUC is 0.88 (1 = all 31 first, 0.5 = chance). On the matched <span class="c-A">aligned controls</span> it drops to 0.68, so the small models are picking up the pressure, not just the topic.</p>
+      </figcaption>
     </figure>
   </section>
 

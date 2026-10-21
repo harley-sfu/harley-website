@@ -509,6 +509,8 @@ h3 { margin: 0 0 12px; font: 600 13px/1.4 var(--sans); letter-spacing: .14em; te
 #cutoff:focus-visible + .handle { outline: 2px solid var(--A); outline-offset: 3px; }
 .axis-labels { display: flex; justify-content: space-between; margin-top: 8px; font-size: 12px; color: var(--ink-3); letter-spacing: .04em; }
 .prophecy figcaption { margin-top: 14px; font-size: 13px; color: var(--ink-3); max-width: 680px; }
+.prophecy figcaption p { margin: 0 0 8px; }
+.prophecy figcaption p:last-child { margin-bottom: 0; }
 
 /* ---------- the reading ---------- */
 .saul { margin: 0 auto 72px; max-width: 680px; text-align: center; }
