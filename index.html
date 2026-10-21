@@ -81,7 +81,7 @@
     <header class="chapter-head">
       <p class="overline">Introduction</p>
       <h2>Not all misalignment is dramatic</h2>
-      <p class="sub">Much of what causes misalignment in ordinary chats is a model giving in to user pressure. A user may demand an unsupported conclusion, like faked experiment results, or hide a harmful task inside a legitimate request.</p>
+      <p class="sub">Much of what causes misalignment in a model is through giving into user pressure. A user may demand an unsupported conclusion, like faked experiment results, or hide a harmful task inside a legitimate request.</p>
     </header>
     <div class="intro-notes">
       <div>
@@ -165,7 +165,7 @@
     <header class="chapter-head">
       <p class="overline"><span class="numeral">II</span> The second world &middot; the split</p>
       <h2>A one-line pretext undoes most refusals</h2>
-      <p class="sub">The fifth prompt of every set is either a hard negative or a jailbreak. A hard negative changes <em>what is asked</em>, so the task becomes appropirate. A jailbreak variant adds an unverifiable claim: the action stays the same, so helping is still wrong if the claim is false. All 200 sets in the gold set started as hard negatives; in human review, 140 turned out to add an unverifiable claim, so we relabelled them as jailbreak variants. The jailbreak has a median of just nine added or changed words.</p>
+      <p class="sub">The fifth prompt of every set is either a hard negative (modifying the request to make it appropriate) or a jailbreak (retaining the harmful action but adding an unverifiable pretext or claim). During human review of the 200 gold sets, 140 initial hard negatives were reclassified as jailbreaks. Despite altering a median of just nine words, these jailbreaks significantly reduce model refusal.</p>
     </header>
 
     <div class="split" id="split-viz" aria-hidden="true"></div>
@@ -201,11 +201,11 @@
     <header class="chapter-head">
       <p class="overline"><span class="numeral">III</span> The third world &middot; prophecy</p>
       <h2>Small open models predict frontier model failures</h2>
-      <p class="sub">Testing every prompt on every frontier model is expensive. We asked whether two cheap open models could predict which prompts make the expensive ones misbehave. It turns out they can, the prompts that trip up the small models are mostly the same ones that trip up the big ones.</p>
+      <p class="sub">Testing every prompt on every frontier model is expensive. We asked whether two cheap open models could predict which prompts make the frontier ones misbehave. It turns out they can, the prompts that trip up the small models are mostly the same ones that trip up the big ones.</p>
     </header>
     <ol class="steps">
-      <li><b>Find the frontier failures.</b> Out of 200 <span class="c-T">target</span> prompts, 31 broke at least one of the six most robust models (Claude&nbsp;Opus&nbsp;5, GPT-5.6 Sol and Luna, DeepSeek&nbsp;V4.1&nbsp;Flash, Kimi&nbsp;K3, GLM&nbsp;5.3). &ldquo;A break&rdquo; occurs when at least 3 of the model&rsquo;s 5 responses are misaligned.</li>
-      <li><b>Rank using small models.</b> We sorted all 200 gold set targets based on how frequently they caused misalignment in Gemma&nbsp;4&nbsp;31B and Qwen&nbsp;3.8&nbsp;27B.</li>
+      <li><b>Find the frontier failures.</b> Out of 200 <span class="c-T">target</span> prompts in the gold set, 31 break at least one of the six most robust models (Claude&nbsp;Opus&nbsp;5, GPT-5.6 Sol and Luna, DeepSeek&nbsp;V4.1&nbsp;Flash, Kimi&nbsp;K3, GLM&nbsp;5.3). A break occurs when at least 3 of the model&rsquo;s 5 responses are misaligned.</li>
+      <li><b>Rank using small models.</b> We sorted all 200 gold set <span class="c-T">targets</span> prompts based on how frequently they caused misalignment in Gemma&nbsp;4&nbsp;31B and Qwen&nbsp;3.8&nbsp;27B.</li>
       <li><b>Evaluate the distribution.</b> While random sampling would place about a third of the 31 prompt failures in the top third, the small-model ranking successfully groups 28 of them (90%) into the top third. This means we can capture nearly all frontier model failures by testing just 33% of the dataset.</li>
     </ol>
     <figure class="prophecy">
@@ -220,7 +220,7 @@
         <input id="cutoff" type="range" min="1" max="200" value="67" aria-label="Number of top-ranked prompts to test">
       </div>
       <div class="axis-labels"><span>ranked first</span><span>ranked last</span></div>
-      <figcaption><b>How to read it.</b> Each tick is one target prompt, ordered left to right from the one the small models fail most often to the one they fail least. Tall ticks are the 31 that broke a frontier model. Drag across the chart to choose how many prompts to test: the solid curve shows how many of the 31 you would find, and the dashed line shows what a random order would find. In a random order the failures are spread evenly, so testing 33% of prompts would catch only about 33% of them; the gap between the two lines is how much the ranking beats chance. The cards above show which of the 31 broke each frontier model; hover or click one to highlight its ticks. Overall the ranking scores an AUC of 0.88, where 1 would put all 31 first and 0.5 is no better than chance. On the matched <span class="c-A">aligned controls</span> it drops to 0.68, so the small models are picking up the pressure, not just the topic.</figcaption>
+      <figcaption><b>How to read it.</b> Each tick is one target prompt, ordered left to right from the one the small models fail most often to the one they fail least. Tall ticks are the 31 that broke a frontier model. Drag across the chart to choose how many prompts to test: the solid curve shows how many of the 31 you would find, and the dashed line shows what a random sampl would find. In a random sample the failures are spread evenly, so testing 33% of prompts would catch only about 33% of them; the gap between the two lines is how much the ranking beats chance. The cards above show which of the 31 broke each frontier model; hover or click one to highlight its ticks. Overall the ranking scores an AUC of 0.88, where 1 would put all 31 first and 0.5 is no better than chance. On the matched <span class="c-A">aligned controls</span> it drops to 0.68, so the small models are picking up the pressure, not just the topic.</figcaption>
     </figure>
   </section>
 
