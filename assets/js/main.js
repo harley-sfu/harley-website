@@ -146,14 +146,14 @@
     });
     var num = svg('text', { x: C, y: C + 6, class: 'center-num' }, host);
     var lab = svg('text', { x: C, y: C + 26, class: 'center-lab' }, host);
-    var lab2 = svg('text', { x: C, y: C - 30, class: 'center-lab' }, host);
+    var lab2 = svg('text', { x: C, y: C - 28, class: 'center-lab center-sub' }, host);
     function setCenter(a, b, c) { num.textContent = a; lab.textContent = b; lab2.textContent = c || ''; }
     setCenter('1,591', 'sets', '17 languages');
     function focusLang(i) {
       groups.forEach(function (x, j) { x.g.classList.toggle('dim', i >= 0 && j !== i); x.g.classList.toggle('on', j === i); });
       if (i < 0) { setCenter('1,591', 'sets', '17 languages'); return; }
       var L = groups[i].lang;
-      setCenter(String(L.gold + L.silver), L.language, L.gold ? L.gold + ' reviewed' : 'model-reviewed');
+      setCenter(String(L.gold + L.silver), L.language, L.gold ? L.gold + ' gold set' + (L.gold === 1 ? '' : 's') : 'silver sets only');
     }
     host.addEventListener('mouseleave', function () { focusLang(-1); });
 
