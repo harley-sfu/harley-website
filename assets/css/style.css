@@ -222,7 +222,7 @@ h3 { margin: 0 0 12px; font: 600 13px/1.4 var(--sans); letter-spacing: .14em; te
 #rings .ring { fill: none; stroke: var(--rule); stroke-width: 1; transition: stroke .2s; }
 #rings .ring-hit { fill: none; stroke: transparent; stroke-width: 11; cursor: pointer; pointer-events: stroke; }
 #rings .mark { stroke-linecap: round; transition: opacity .2s, stroke .2s; }
-#rings .mark.gold { stroke: var(--ink); stroke-width: 1.7; }
+#rings .mark.gold { stroke: var(--J); stroke-width: 1.7; }
 #rings .mark.silver { stroke: var(--ink-3); stroke-width: 1; opacity: .42; }
 #rings g.lang.dim .mark { opacity: .12; }
 #rings g.lang.on .ring { stroke: var(--ink-2); }

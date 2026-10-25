@@ -1,0 +1,694 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>[lab] Ring samples · HARLEY</title>
+<meta name="color-scheme" content="light dark">
+<link rel="icon" type="image/png" href="../assets/img/owl.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/css/style.css">
+<script>
+  try { var t = localStorage.getItem('harley-theme'); if (t) document.documentElement.setAttribute('data-theme', t); } catch (e) {}
+</script>
+<style>
+  body { background: var(--bg); color: var(--ink); }
+  .lab-wrap { max-width: var(--w); margin: 0 auto; padding: 0 var(--gutter) 96px; }
+  .lab-head { padding: 44px 0 28px; display: flex; justify-content: space-between; gap: 16px; align-items: flex-start; }
+  .lab-head h1 { font: 500 clamp(34px, 5vw, 52px)/1.05 var(--serif); margin: 8px 0 12px; }
+  .lab-head p { max-width: 62ch; color: var(--ink-2); margin: 0; font-size: 15.5px; line-height: 1.55; }
+  .tag { font: 600 11px/1 var(--sans); letter-spacing: .16em; text-transform: uppercase; color: var(--ink-3); margin: 0; }
+
+  .sample { border-top: 1px solid var(--rule); padding: 52px 0; display: grid; grid-template-columns: minmax(0, 1.35fr) minmax(260px, 1fr); gap: clamp(24px, 4vw, 56px); align-items: start; }
+  .sample-fig { margin: 0; position: relative; }
+  .sample-fig svg { display: block; width: 100%; height: auto; overflow: visible; touch-action: manipulation; outline: none; -webkit-tap-highlight-color: transparent; }
+  .sample-fig svg:focus-visible { outline: 1px dashed var(--ink-3); outline-offset: 6px; border-radius: 8px; }
+  .sample h2 { font: 500 30px/1.1 var(--serif); margin: 8px 0 10px; }
+  .pitch { color: var(--ink-2); margin: 0 0 18px; font-size: 15px; line-height: 1.55; }
+
+  .lx-legend { display: flex; gap: 18px; flex-wrap: wrap; font: 500 12.5px/1.3 var(--sans); color: var(--ink-2); margin: 0 0 16px; padding: 0; list-style: none; }
+  .lx-legend li { display: flex; align-items: center; gap: 8px; }
+  .sw { width: 14px; height: 10px; border-radius: 2px; display: inline-block; }
+  .sw.gold { background: var(--J); }
+  .sw.silver { background: var(--ink-3); opacity: .55; }
+
+  .lx-ro { border: 1px solid var(--rule); border-radius: 10px; padding: 16px 18px; background: var(--surface); }
+  .ro-name { font: 500 28px/1.1 var(--serif); margin: 8px 0 12px; color: var(--ink); }
+  .ro-bar { display: flex; gap: 2px; height: 8px; border-radius: 4px; overflow: hidden; background: var(--rule-2); margin-bottom: 10px; }
+  .ro-bar span { transition: width .3s ease; }
+  .ro-bar .g { background: var(--J); }
+  .ro-bar .s { background: var(--ink-3); opacity: .55; }
+  .ro-detail { margin: 0; font: 400 13.5px/1.45 var(--sans); color: var(--ink-2); }
+  .ro-detail b { color: var(--J); font-weight: 600; }
+  .ro-hint { margin: 12px 0 0; font: 400 12.5px/1.4 var(--sans); color: var(--ink-3); }
+
+  .controls { display: flex; flex-wrap: wrap; gap: 8px; margin: 18px 0 0; align-items: center; }
+  .lx-chip { font: 500 12.5px/1 var(--sans); padding: 8px 12px; border-radius: 999px; border: 1px solid var(--rule); background: transparent; color: var(--ink-2); cursor: pointer; }
+  .lx-chip:hover { border-color: var(--ink-3); color: var(--ink); }
+  .lx-chip[aria-pressed="true"] { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+  .lx-chip:focus-visible { outline: 2px solid var(--ink-3); outline-offset: 2px; }
+  .lx-chip.primary { border-color: var(--J); color: var(--ink); }
+  .sep { width: 1px; height: 20px; background: var(--rule); margin: 0 4px; }
+  .try { margin: 18px 0 0; padding-left: 18px; color: var(--ink-3); font: 400 12.5px/1.65 var(--sans); }
+  .mode-note { margin: 12px 0 0; font: 400 13.5px/1.5 var(--sans); color: var(--ink-2); min-height: 3em; }
+
+  .tour { margin-top: 16px; border-left: 2px solid var(--J); padding: 4px 0 4px 14px; }
+  .tour[hidden] { display: none; }
+  .tour p:not(.tag) { margin: 6px 0 12px; font: 400 15.5px/1.5 var(--text-serif); color: var(--ink); }
+
+  .range-row { display: flex; align-items: center; gap: 10px; font: 500 12px/1 var(--sans); color: var(--ink-3); width: 100%; margin-top: 4px; }
+  .range-row input { flex: 1; accent-color: var(--J); }
+
+  /* rings (A and B) */
+  .ring { fill: none; stroke: var(--rule); stroke-width: 1; transition: stroke .2s; }
+  .ring-hit { fill: none; stroke: transparent; stroke-width: 11; pointer-events: stroke; cursor: pointer; }
+  .mark { stroke-linecap: round; transition: opacity .25s; }
+  .mark.gold { stroke: var(--J); stroke-width: 1.8; }
+  .mark.silver { stroke: var(--ink-3); stroke-width: 1; opacity: .45; }
+  g.lang.dim .mark { opacity: .08; }
+  g.lang.dim .ring { stroke: var(--rule-2); }
+  g.lang.on .ring { stroke: var(--ink-2); }
+  g.lang.on .mark.silver { opacity: 1; stroke: var(--ink-2); }
+  .only-gold .mark.silver { opacity: .05; }
+  .only-silver .mark.gold { opacity: .08; }
+  .heart { fill: var(--paper); opacity: .7; }
+  .center-num { font: 500 38px/1 var(--serif); fill: var(--ink); text-anchor: middle; }
+  .center-lab { font: 500 9.5px/1 var(--sans); letter-spacing: .18em; text-transform: uppercase; fill: var(--ink-3); text-anchor: middle; }
+  .ring-name { font: 600 8px/1 var(--sans); fill: var(--ink); paint-order: stroke; stroke: var(--bg); stroke-width: 3px; stroke-linejoin: round; opacity: 0; transition: opacity .2s; pointer-events: none; }
+  .show-names .ring-name, g.lang.on .ring-name { opacity: 1; }
+  .show-names g.lang.dim .ring-name { opacity: .25; }
+
+  .b-lab { font: 500 12px/1 var(--sans); fill: var(--ink-2); text-anchor: end; }
+  .b-cnt { font: 500 11px/1 var(--sans); fill: var(--ink-3); font-variant-numeric: tabular-nums; }
+  g.lang.on .b-lab, g.lang.on .b-cnt { fill: var(--ink); }
+  g.lang.dim .b-lab, g.lang.dim .b-cnt { opacity: .3; }
+
+  /* dots (C) */
+  .lx-dot { transition: opacity .25s; }
+  .lx-dot.gold { fill: var(--J); }
+  .lx-dot.silver { fill: var(--ink-3); opacity: .6; }
+  g.lang.dim .lx-dot { opacity: .1; }
+  g.lang.on .lx-dot.silver { fill: var(--ink); opacity: .85; }
+  .isl-lab { font: 500 11px/1 var(--sans); fill: var(--ink-2); text-anchor: middle; pointer-events: none; transition: opacity .4s; }
+  .isl-lab.big { font: 500 13px/1 var(--sans); }
+  .isl-sub { fill: var(--ink-3); font-weight: 400; }
+
+  @media (max-width: 860px) {
+    .sample { grid-template-columns: 1fr; }
+    .sample-fig { max-width: 520px; width: 100%; margin: 0 auto; }
+  }
+</style>
+</head>
+<body>
+<div class="lab-wrap">
+
+  <header class="lab-head">
+    <div>
+      <p class="tag">Lab · hero visual samples</p>
+      <h1>Three ways to read the rings</h1>
+      <p>Each sample uses the real counts: 1,591 contrast sets in 17 languages, 200 of them human-reviewed (gold). They are all meant to be played with, which the paper and code can't offer. Hover or tap anything. Every chart can also be focused with Tab and stepped through with the arrow keys.</p>
+    </div>
+    <div class="theme-switch" role="group" aria-label="Colour theme">
+      <button type="button" data-set-theme="light" title="Light mode">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.5v2.2M12 19.3v2.2M2.5 12h2.2M19.3 12h2.2M5.3 5.3l1.6 1.6M17.1 17.1l1.6 1.6M5.3 18.7l1.6-1.6M17.1 6.9l1.6-1.6"/></svg>
+        <span class="sr-only">Light mode</span>
+      </button>
+      <button type="button" data-set-theme="dark" title="Dark mode">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19.5 14.6A8 8 0 0 1 9.4 4.5a8 8 0 1 0 10.1 10.1z"/></svg>
+        <span class="sr-only">Dark mode</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- ===================== A ===================== -->
+  <section class="sample" id="a">
+    <figure class="sample-fig">
+      <svg id="a-svg" viewBox="0 0 480 480" tabindex="0" role="img" aria-label="1,591 contrast sets as 17 rings, one per language. Use the arrow keys to step through the rings."></svg>
+    </figure>
+    <div>
+      <p class="tag">Sample A</p>
+      <h2>The rings, with a guide</h2>
+      <p class="pitch">The current rings, plus a legend, names you can turn on, a readout that stays put, and a short guided tour for first-time readers.</p>
+      <ul class="lx-legend">
+        <li><span class="sw gold"></span>Gold set · human-reviewed</li>
+        <li><span class="sw silver"></span>Silver set · model-reviewed</li>
+      </ul>
+      <div class="lx-ro" id="a-ro" aria-live="polite">
+        <p class="tag ro-kicker"></p><p class="ro-name"></p>
+        <div class="ro-bar"><span class="g"></span><span class="s"></span></div>
+        <p class="ro-detail"></p><p class="ro-hint"></p>
+      </div>
+      <div class="tour" id="a-tour" hidden>
+        <p class="tag" id="a-step"></p>
+        <p id="a-text"></p>
+        <div class="controls" style="margin-top:0">
+          <button class="lx-chip" type="button" id="a-back">Back</button>
+          <button class="lx-chip primary" type="button" id="a-next">Next</button>
+          <button class="lx-chip" type="button" id="a-end">End tour</button>
+        </div>
+      </div>
+      <div class="controls">
+        <button class="lx-chip primary" type="button" id="a-tour-btn">Take the 30-second tour</button>
+        <button class="lx-chip" type="button" id="a-names" aria-pressed="false">Show names</button>
+      </div>
+      <div class="controls" role="group" aria-label="Which sets to show">
+        <button class="lx-chip" type="button" data-filter="all" aria-pressed="true">All sets</button>
+        <button class="lx-chip" type="button" data-filter="gold" aria-pressed="false">Gold only</button>
+        <button class="lx-chip" type="button" data-filter="silver" aria-pressed="false">Silver only</button>
+      </div>
+      <ul class="try">
+        <li>Click a ring to pin it, and click the empty space to let go.</li>
+        <li>"Gold only" shows that every reviewed set sits on the ten inner rings.</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ===================== B ===================== -->
+  <section class="sample" id="b">
+    <figure class="sample-fig">
+      <svg id="b-svg" viewBox="0 0 480 480" tabindex="0" role="img" aria-label="The 17 language rings, which can unroll into a bar chart of sets per language. Use the arrow keys to step through the languages."></svg>
+    </figure>
+    <div>
+      <p class="tag">Sample B</p>
+      <h2>Unroll the rings</h2>
+      <p class="pitch">The rings straighten out into a ranked bar chart and roll back up again. Each tick slides to its spot, so readers see that the pretty picture and the plain chart hold the same data.</p>
+      <ul class="lx-legend">
+        <li><span class="sw gold"></span>Gold set · human-reviewed</li>
+        <li><span class="sw silver"></span>Silver set · model-reviewed</li>
+      </ul>
+      <div class="lx-ro" id="b-ro" aria-live="polite">
+        <p class="tag ro-kicker"></p><p class="ro-name"></p>
+        <div class="ro-bar"><span class="g"></span><span class="s"></span></div>
+        <p class="ro-detail"></p><p class="ro-hint"></p>
+      </div>
+      <div class="controls">
+        <button class="lx-chip primary" type="button" id="b-play">Unroll into bars</button>
+      </div>
+      <div class="controls">
+        <label class="range-row">Rings <input type="range" id="b-range" min="0" max="1000" value="0" aria-label="Rings to bars"> Bars</label>
+      </div>
+      <ul class="try">
+        <li>Drag the slider slowly: the gold ticks gather at the start of each bar.</li>
+        <li>Hovering works halfway through too, so you can follow one ring as it unrolls.</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ===================== C ===================== -->
+  <section class="sample" id="c">
+    <figure class="sample-fig">
+      <svg id="c-svg" viewBox="0 0 640 470" tabindex="0" role="img" aria-label="1,591 dots, one per contrast set, which regroup into a trunk, islands per language, or gold and silver piles. Use the arrow keys to step through the languages."></svg>
+    </figure>
+    <div>
+      <p class="tag">Sample C</p>
+      <h2>One dot per set, three views</h2>
+      <p class="pitch">All 1,591 sets as dots that fly between views. The trunk keeps the tree-ring look, the islands compare languages, and the gold/silver view shows where each language's reviewed sets went.</p>
+      <ul class="lx-legend">
+        <li><span class="sw gold"></span>Gold set · human-reviewed</li>
+        <li><span class="sw silver"></span>Silver set · model-reviewed</li>
+      </ul>
+      <div class="controls" role="group" aria-label="View" style="margin:0 0 4px">
+        <button class="lx-chip" type="button" data-mode="trunk" aria-pressed="true">Trunk</button>
+        <button class="lx-chip" type="button" data-mode="islands" aria-pressed="false">Islands</button>
+        <button class="lx-chip" type="button" data-mode="review" aria-pressed="false">Gold vs silver</button>
+      </div>
+      <p class="mode-note" id="c-note"></p>
+      <div class="lx-ro" id="c-ro" aria-live="polite">
+        <p class="tag ro-kicker"></p><p class="ro-name"></p>
+        <div class="ro-bar"><span class="g"></span><span class="s"></span></div>
+        <p class="ro-detail"></p><p class="ro-hint"></p>
+      </div>
+      <ul class="try">
+        <li>Hover Korean in the trunk, then switch views: its dots stay lit as they move.</li>
+        <li>In "Gold vs silver", the gold pile is made of only ten languages.</li>
+      </ul>
+    </div>
+  </section>
+
+</div>
+
+<script src="../data/site-data.js"></script>
+<script>
+(function () {
+  'use strict';
+  var D = window.HARLEY;
+  if (!D) return;
+  var SVGNS = 'http://www.w3.org/2000/svg';
+  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  function svg(tag, attrs, parent) {
+    var n = document.createElementNS(SVGNS, tag);
+    if (attrs) for (var k in attrs) n.setAttribute(k, attrs[k]);
+    if (parent) parent.appendChild(n);
+    return n;
+  }
+  function mulberry32(a) {
+    return function () {
+      a |= 0; a = a + 0x6D2B79F5 | 0;
+      var t = Math.imul(a ^ a >>> 15, 1 | a);
+      t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t;
+      return ((t ^ t >>> 14) >>> 0) / 4294967296;
+    };
+  }
+  function clamp(x) { return x < 0 ? 0 : x > 1 ? 1 : x; }
+  function ease(t) { return t < .5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2; }
+  function fmtN(n) { return n.toLocaleString('en-US'); }
+  function toSvg(host, e) {
+    var p = host.createSVGPoint(); p.x = e.clientX; p.y = e.clientY;
+    return p.matrixTransform(host.getScreenCTM().inverse());
+  }
+  function tween(dur, fn, done) {
+    if (reduce) { fn(1); if (done) done(); return function () {}; }
+    var t0 = performance.now(), live = true;
+    (function f(now) {
+      if (!live) return;
+      var t = Math.min(1, (now - t0) / dur); fn(t);
+      if (t < 1) requestAnimationFrame(f); else if (done) done();
+    })(t0);
+    return function () { live = false; };
+  }
+  // the gold sets of a ring, picked at random places, like knots in the grain
+  function pickGold(n, gold, rnd) {
+    var slots = []; for (var q = 0; q < n; q++) slots.push(q);
+    for (var i = n - 1; i > 0; i--) { var z = Math.floor(rnd() * (i + 1)); var t = slots[i]; slots[i] = slots[z]; slots[z] = t; }
+    var set = {}; slots.slice(0, gold).forEach(function (s) { set[s] = true; });
+    return set;
+  }
+
+  /* the same ring order as the hero: languages with gold sets inside, then the rest, each by size */
+  var GOLD_L = D.rings.filter(function (r) { return r.gold > 0; }).sort(function (a, b) { return (a.gold + a.silver) - (b.gold + b.silver); });
+  var REST_L = D.rings.filter(function (r) { return r.gold === 0; }).sort(function (a, b) { return a.silver - b.silver; });
+  var RING = GOLD_L.concat(REST_L);
+  var NL = RING.length;
+  var TOTAL = 0, GOLD = 0;
+  RING.forEach(function (l) { TOTAL += l.gold + l.silver; GOLD += l.gold; });
+  var BYSIZE = RING.map(function (l, i) { return i; }).sort(function (a, b) { return (RING[b].gold + RING[b].silver) - (RING[a].gold + RING[a].silver); });
+  function idxOf(name) { for (var i = 0; i < NL; i++) if (RING[i].language === name) return i; return -1; }
+
+  function readout(root, hint) {
+    var k = root.querySelector('.ro-kicker'), nm = root.querySelector('.ro-name'),
+        g = root.querySelector('.ro-bar .g'), s = root.querySelector('.ro-bar .s'),
+        d = root.querySelector('.ro-detail');
+    root.querySelector('.ro-hint').textContent = hint;
+    function show(lang, kicker) {
+      if (!lang) {
+        k.textContent = 'All ' + NL + ' languages';
+        nm.textContent = fmtN(TOTAL) + ' contrast sets';
+        g.style.width = (GOLD / TOTAL * 100) + '%'; s.style.width = (100 - GOLD / TOTAL * 100) + '%';
+        d.innerHTML = '<b>' + GOLD + ' gold</b> human-reviewed · ' + fmtN(TOTAL - GOLD) + ' silver, reviewed by models';
+        return;
+      }
+      var n = lang.gold + lang.silver;
+      k.textContent = kicker || '';
+      nm.textContent = lang.language + ' · ' + n + (n === 1 ? ' set' : ' sets');
+      g.style.width = (lang.gold / n * 100) + '%'; s.style.width = (lang.silver / n * 100) + '%';
+      d.innerHTML = (lang.gold ? '<b>' + lang.gold + ' gold</b> human-reviewed · ' : 'No gold sets · ') + lang.silver + ' silver' +
+        '<br>' + (n / TOTAL * 100).toFixed(1) + '% of all sets';
+    }
+    show(null);
+    return show;
+  }
+  // arrow keys step through a list of language indices; Escape clears
+  function keyStepper(host, getList, onPick) {
+    var cur = -1;
+    host.addEventListener('keydown', function (e) {
+      var list = getList(), pos = list.indexOf(cur);
+      if (e.key === 'ArrowRight' || e.key === 'ArrowUp') pos = Math.min(list.length - 1, pos + 1);
+      else if (e.key === 'ArrowLeft' || e.key === 'ArrowDown') pos = pos < 0 ? 0 : Math.max(0, pos - 1);
+      else if (e.key === 'Home') pos = 0;
+      else if (e.key === 'End') pos = list.length - 1;
+      else if (e.key === 'Escape') { cur = -1; onPick(-1); return; }
+      else return;
+      e.preventDefault();
+      cur = list[pos]; onPick(cur);
+    });
+    return { set: function (i) { cur = i; } };
+  }
+
+  /* ================= A: the rings, with a guide ================= */
+  (function sampleA() {
+    var host = document.getElementById('a-svg');
+    var show = readout(document.getElementById('a-ro'), 'Hover or tap a ring. With the chart focused, the arrow keys step outward and inward.');
+    var C = 240, R0 = 66, R1 = 226, step = (R1 - R0) / (NL - 1), rnd = mulberry32(1591);
+    svg('circle', { cx: C, cy: C, r: R0 + step * (GOLD_L.length - 0.5), class: 'heart' }, host);
+
+    var groups = [], pinned = -1, touring = false;
+    RING.forEach(function (lang, i) {
+      var r = R0 + i * step;
+      var ph1 = rnd() * 6.28, ph2 = rnd() * 6.28, amp = 0.9 + i * 0.07;
+      function w(t) { return amp * (Math.sin(3 * t + ph1) * 0.6 + Math.sin(7 * t + ph2) * 0.4); }
+      var g = svg('g', { class: 'lang' }, host);
+      var d = '';
+      for (var a = 0; a <= 360; a += 3) {
+        var t = a * Math.PI / 180, rr = r + w(t);
+        d += (a ? 'L' : 'M') + (C + rr * Math.cos(t)).toFixed(2) + ' ' + (C + rr * Math.sin(t)).toFixed(2);
+      }
+      svg('path', { d: d + 'Z', class: 'ring', id: 'a-ring-' + i }, g);
+      var n = lang.gold + lang.silver, off = rnd() * Math.PI * 2, goldSet = pickGold(n, lang.gold, rnd);
+      for (var k = 0; k < n; k++) {
+        var isGold = !!goldSet[k];
+        var t2 = off + (k + (rnd() - 0.5) * 0.55) * (Math.PI * 2 / n);
+        var rr2 = r + w(t2), len = isGold ? 4.2 : 3.2;
+        svg('line', {
+          x1: (C + (rr2 - len) * Math.cos(t2)).toFixed(2), y1: (C + (rr2 - len) * Math.sin(t2)).toFixed(2),
+          x2: (C + (rr2 + len) * Math.cos(t2)).toFixed(2), y2: (C + (rr2 + len) * Math.sin(t2)).toFixed(2),
+          class: 'mark ' + (isGold ? 'gold' : 'silver')
+        }, g);
+      }
+      // the language's name, written along the top of its own ring
+      var tx = svg('text', { class: 'ring-name', dy: '2.8' }, g);
+      svg('textPath', { href: '#a-ring-' + i, startOffset: '75%', 'text-anchor': 'middle' }, tx).textContent = lang.language;
+      var hit = svg('circle', { cx: C, cy: C, r: r, class: 'ring-hit' }, g);
+      hit.addEventListener('pointerenter', function () { if (pinned < 0 && !touring) focus([i]); });
+      hit.addEventListener('click', function (e) {
+        e.stopPropagation(); if (touring) return;
+        pinned = pinned === i ? -1 : i; keys.set(pinned); focus(pinned < 0 ? [] : [i]);
+      });
+      groups.push(g);
+    });
+    var num = svg('text', { x: C, y: C + 6, class: 'center-num' }, host);
+    var lab = svg('text', { x: C, y: C + 26, class: 'center-lab' }, host);
+    var lab2 = svg('text', { x: C, y: C - 30, class: 'center-lab' }, host);
+    function setCenter(a, b, c) { num.textContent = a; lab.textContent = b; lab2.textContent = c || ''; }
+
+    function focus(list) {
+      groups.forEach(function (g, j) {
+        var on = list.indexOf(j) >= 0;
+        g.classList.toggle('on', on); g.classList.toggle('dim', list.length > 0 && !on);
+      });
+      if (list.length === 1) {
+        var L = RING[list[0]];
+        setCenter(String(L.gold + L.silver), L.language, L.gold ? L.gold + ' gold' : 'silver only');
+        show(L, 'Ring ' + (list[0] + 1) + ' of ' + NL + ', counting from the centre');
+      } else { setCenter(fmtN(TOTAL), 'sets', NL + ' languages'); show(null); }
+    }
+    focus([]);
+    host.addEventListener('pointerleave', function () { if (pinned < 0 && !touring) focus([]); });
+    host.addEventListener('click', function () { if (touring) return; pinned = -1; keys.set(-1); focus([]); });
+    var keys = keyStepper(host, function () { return RING.map(function (l, i) { return i; }); }, function (i) {
+      if (touring) return; pinned = i; focus(i < 0 ? [] : [i]);
+    });
+
+    var filterBtns = document.querySelectorAll('#a [data-filter]');
+    function setFilter(f) {
+      host.classList.toggle('only-gold', f === 'gold'); host.classList.toggle('only-silver', f === 'silver');
+      filterBtns.forEach(function (b) { b.setAttribute('aria-pressed', String(b.getAttribute('data-filter') === f)); });
+    }
+    filterBtns.forEach(function (b) { b.addEventListener('click', function () { setFilter(b.getAttribute('data-filter')); }); });
+    var namesBtn = document.getElementById('a-names');
+    namesBtn.addEventListener('click', function () {
+      var on = host.classList.toggle('show-names'); namesBtn.setAttribute('aria-pressed', String(on));
+    });
+
+    // the tour
+    var zh = RING[idxOf('Chinese')], outer = [], smallest = 0;
+    RING.forEach(function (l, i) {
+      if (!l.gold) outer.push(i);
+      if (l.gold + l.silver < RING[smallest].gold + RING[smallest].silver) smallest = i;
+    });
+    var stops = [
+      { f: [], filter: 'all', text: 'Each ring is one language, and each tick on a ring is one contrast set. That makes ' + fmtN(TOTAL) + ' sets in ' + NL + ' languages.' },
+      { f: [], filter: 'gold', text: 'The gold ticks are the ' + GOLD + ' sets that people reviewed by hand. All of them sit on the ' + GOLD_L.length + ' inner rings.' },
+      { f: [idxOf('Chinese')], filter: 'all', text: 'Chinese has the most sets: ' + (zh.gold + zh.silver) + ', with ' + zh.gold + ' of them reviewed by hand.' },
+      { f: outer, filter: 'all', text: 'The ' + outer.length + ' outer rings have no gold sets. Their sets were reviewed by models only.' },
+      { f: [smallest], filter: 'all', text: RING[smallest].language + ' is the smallest language, with only ' + (RING[smallest].gold + RING[smallest].silver) + ' sets.' },
+      { f: [], filter: 'all', text: 'That’s the whole benchmark. Hover or tap any ring to explore it yourself.' }
+    ];
+    var tourBox = document.getElementById('a-tour'), at = 0;
+    function go(k) {
+      at = k; var s = stops[k];
+      document.getElementById('a-step').textContent = 'Step ' + (k + 1) + ' of ' + stops.length;
+      document.getElementById('a-text').textContent = s.text;
+      document.getElementById('a-back').disabled = k === 0;
+      document.getElementById('a-next').textContent = k === stops.length - 1 ? 'Done' : 'Next';
+      setFilter(s.filter); focus(s.f);
+    }
+    function endTour() { touring = false; tourBox.hidden = true; setFilter('all'); focus([]); document.getElementById('a-tour-btn').focus(); }
+    document.getElementById('a-tour-btn').addEventListener('click', function () {
+      touring = true; pinned = -1; tourBox.hidden = false; go(0); document.getElementById('a-next').focus();
+    });
+    document.getElementById('a-next').addEventListener('click', function () { if (at === stops.length - 1) endTour(); else go(at + 1); });
+    document.getElementById('a-back').addEventListener('click', function () { if (at > 0) go(at - 1); });
+    document.getElementById('a-end').addEventListener('click', endTour);
+  })();
+
+  /* ================= B: unroll the rings ================= */
+  (function sampleB() {
+    var host = document.getElementById('b-svg');
+    var show = readout(document.getElementById('b-ro'), 'Drag the slider or press the button. Hover a ring or bar to read it.');
+    var C = 240, R0 = 52, R1 = 222, K = 121, step = (R1 - R0) / (NL - 1), rnd = mulberry32(77);
+    var TOP = 48, ROW = 24.5, LX = 98, BX = 106, BMAX = 318, STAG = 0.55;
+    var MAX = RING[BYSIZE[0]].gold + RING[BYSIZE[0]].silver;
+    var rank = []; BYSIZE.forEach(function (li, r) { rank[li] = r; });
+    var num = svg('text', { x: C, y: C + 6, class: 'center-num' }, host); num.textContent = fmtN(TOTAL);
+    var lab = svg('text', { x: C, y: C + 26, class: 'center-lab' }, host); lab.textContent = 'sets';
+    var lab2 = svg('text', { x: C, y: C - 30, class: 'center-lab' }, host); lab2.textContent = NL + ' languages';
+
+    var rings = RING.map(function (lang, i) {
+      var n = lang.gold + lang.silver, r = R0 + i * step, len = n / MAX * BMAX, y = TOP + rank[i] * ROW;
+      var ph1 = rnd() * 6.28, ph2 = rnd() * 6.28, amp = 0.8 + i * 0.06;
+      function w(t) { return amp * (Math.sin(3 * t + ph1) * 0.6 + Math.sin(7 * t + ph2) * 0.4); }
+      function ringPt(u) { var th = -Math.PI / 2 + u * 2 * Math.PI, rr = r + w(th); return [C + rr * Math.cos(th), C + rr * Math.sin(th), th]; }
+      var g = svg('g', { class: 'lang' }, host);
+      var path = svg('path', { class: 'ring' }, g);
+      var p0 = [], p1 = [];
+      for (var k = 0; k < K; k++) { var u = k / (K - 1); p0.push(ringPt(u)); p1.push([BX + u * len, y]); }
+      var goldSet = pickGold(n, lang.gold, rnd), off = rnd(), gi = 0, si = lang.gold, marks = [];
+      for (var m = 0; m < n; m++) {
+        var isGold = !!goldSet[m];
+        var uR = ((m + (rnd() - 0.5) * 0.55) / n + off) % 1; if (uR < 0) uR += 1;
+        var uB = ((isGold ? gi++ : si++) + 0.5) / n;   // in the bar, gold sets come first
+        var a = ringPt(uR), a0 = a[2], da = ((Math.PI / 2 - a0) % (2 * Math.PI) + 3 * Math.PI) % (2 * Math.PI) - Math.PI;
+        marks.push({ el: svg('line', { class: 'mark ' + (isGold ? 'gold' : 'silver') }, g),
+          x0: a[0], y0: a[1], x1: BX + uB * len, y1: y, a0: a0, da: da, l0: isGold ? 4.2 : 3.2 });
+      }
+      var tl = svg('text', { class: 'b-lab', x: LX, y: y + 4 }, g); tl.textContent = lang.language;
+      var tc = svg('text', { class: 'b-cnt', x: BX + len + 7, y: y + 4 }, g); tc.textContent = n;
+      return { g: g, path: path, p0: p0, p1: p1, marks: marks, tl: tl, tc: tc, y: y, cur: [] };
+    });
+
+    var T = 0;
+    function render(v) {
+      T = v;
+      rings.forEach(function (R, i) {
+        var t = ease(clamp(T * (1 + STAG) - STAG * i / (NL - 1)));
+        var d = '', cur = R.cur; cur.length = 0;
+        for (var k = 0; k < K; k++) {
+          var x = R.p0[k][0] + (R.p1[k][0] - R.p0[k][0]) * t, y = R.p0[k][1] + (R.p1[k][1] - R.p0[k][1]) * t;
+          d += (k ? 'L' : 'M') + x.toFixed(1) + ' ' + y.toFixed(1); cur.push(x, y);
+        }
+        R.path.setAttribute('d', d);
+        R.marks.forEach(function (m) {
+          var x = m.x0 + (m.x1 - m.x0) * t, y = m.y0 + (m.y1 - m.y0) * t, a = m.a0 + m.da * t, l = m.l0 + (5 - m.l0) * t;
+          var cx = Math.cos(a) * l, cy = Math.sin(a) * l;
+          m.el.setAttribute('x1', (x - cx).toFixed(1)); m.el.setAttribute('y1', (y - cy).toFixed(1));
+          m.el.setAttribute('x2', (x + cx).toFixed(1)); m.el.setAttribute('y2', (y + cy).toFixed(1));
+        });
+        var lo = clamp((t - .7) / .3);
+        R.tl.setAttribute('opacity', lo); R.tc.setAttribute('opacity', lo);
+      });
+      var co = clamp(1 - T * 2.5);
+      num.setAttribute('opacity', co); lab.setAttribute('opacity', co); lab2.setAttribute('opacity', co);
+      range.value = Math.round(T * 1000);
+      play.textContent = T > .5 ? 'Roll back into rings' : 'Unroll into bars';
+    }
+
+    var focused = -1;
+    function focus(i) {
+      focused = i;
+      rings.forEach(function (R, j) { R.g.classList.toggle('on', j === i); R.g.classList.toggle('dim', i >= 0 && j !== i); });
+      if (i < 0) { show(null); return; }
+      show(RING[i], T > .5 ? 'Number ' + (rank[i] + 1) + ' of ' + NL + ' by size' : 'Ring ' + (i + 1) + ' of ' + NL + ', counting from the centre');
+    }
+    host.addEventListener('pointermove', function (e) {
+      var p = toSvg(host, e), best = -1, bd = 13 * 13;
+      rings.forEach(function (R, i) {
+        for (var k = 0; k < R.cur.length; k += 2) {
+          var dx = R.cur[k] - p.x, dy = R.cur[k + 1] - p.y, dd = dx * dx + dy * dy;
+          if (dd < bd) { bd = dd; best = i; }
+        }
+        if (T > .6 && p.x < BX && Math.abs(p.y - R.y) < ROW / 2) { best = i; bd = 0; }
+      });
+      if (best !== focused) focus(best);
+    });
+    host.addEventListener('pointerleave', function () { focus(-1); });
+    keyStepper(host, function () {
+      return T > .5 ? BYSIZE.slice().reverse() : RING.map(function (l, i) { return i; });
+    }, focus);
+
+    var range = document.getElementById('b-range'), play = document.getElementById('b-play'), stop = function () {};
+    range.addEventListener('input', function () { stop(); render(range.value / 1000); });
+    play.addEventListener('click', function () {
+      stop();
+      var from = T, to = T > .5 ? 0 : 1;
+      stop = tween(1900 * Math.abs(to - from) + 200, function (k) { render(from + (to - from) * k); });
+    });
+    render(0);
+  })();
+
+  /* ================= C: one dot per set, three views ================= */
+  (function sampleC() {
+    var host = document.getElementById('c-svg'), W = 640, H = 470, PAD = 14;
+    var show = readout(document.getElementById('c-ro'), 'Hover or tap any dot to light up its language. Switch views and it stays lit.');
+    var GA = Math.PI * (3 - Math.sqrt(5)), DOT = 0.42, rnd = mulberry32(9);
+    var dotsLayer = svg('g', null, host), labLayer = svg('g', null, host);
+    var groups = RING.map(function () { return svg('g', { class: 'lang' }, dotsLayer); });
+    var dots = [];
+    RING.forEach(function (lang, li) {
+      for (var k = 0; k < lang.gold + lang.silver; k++) {
+        var gold = k < lang.gold;
+        dots.push({ li: li, gold: gold, delay: rnd() * .35, x: W / 2, y: H / 2, r: 0,
+          el: svg('circle', { class: 'lx-dot ' + (gold ? 'gold' : 'silver'), cx: W / 2, cy: H / 2, r: 0 }, groups[li]) });
+      }
+    });
+    function spiral(n, ox, oy) {
+      var out = [];
+      for (var j = 0; j < n; j++) { var rr = Math.sqrt(j + 0.5), th = j * GA; out.push([ox + rr * Math.cos(th), oy + rr * Math.sin(th)]); }
+      return out;
+    }
+    // scale a layout (in dot units) to fill the chart
+    function fit(pos, labels) {
+      var x0 = 1e9, y0 = 1e9, x1 = -1e9, y1 = -1e9;
+      pos.forEach(function (p) { x0 = Math.min(x0, p[0] - 1); y0 = Math.min(y0, p[1] - 1); x1 = Math.max(x1, p[0] + 1); y1 = Math.max(y1, p[1] + 1); });
+      labels.forEach(function (l) { y1 = Math.max(y1, l.y + (l.sub ? 4.6 : 2.6)); });
+      var s = Math.min((W - 2 * PAD) / (x1 - x0), (H - 2 * PAD) / (y1 - y0));
+      var ox = (W - (x1 - x0) * s) / 2 - x0 * s, oy = (H - (y1 - y0) * s) / 2 - y0 * s;
+      return {
+        pos: pos.map(function (p) { return [ox + p[0] * s, oy + p[1] * s]; }),
+        r: Math.max(1.1, DOT * s),
+        labels: labels.map(function (l) { return { x: ox + l.x * s, y: oy + l.y * s, text: l.text, sub: l.sub, big: l.big, li: l.li }; })
+      };
+    }
+    function byLang(list) {   // dot indices, grouped by ring order, gold first within each
+      var out = []; RING.forEach(function (l, li) { list.forEach(function (d) { if (dots[d].li === li) out.push(d); }); });
+      return out;
+    }
+    var ALL = dots.map(function (d, i) { return i; });
+    var MODES = {
+      trunk: {
+        note: 'All ' + fmtN(TOTAL) + ' sets packed into one cross-section. Each band is a language, from ' + RING[0].language + ' at the core to ' + RING[NL - 1].language + ' at the bark.',
+        build: function () {
+          var sp = spiral(dots.length, 0, 0), pos = [];
+          ALL.forEach(function (d, j) { pos[d] = sp[j]; });
+          return fit(pos, []);
+        }
+      },
+      islands: {
+        note: 'One island per language, sized by how many sets it has. Gold sets sit at the heart of each island.',
+        build: function () {
+          var radii = RING.map(function (l) { return Math.sqrt(l.gold + l.silver) + 0.8; });
+          var order = radii.map(function (r, i) { return i; }).sort(function (a, b) { return radii[b] - radii[a]; });
+          var placed = [], centre = [];
+          order.forEach(function (i) {
+            var r = radii[i];
+            for (var s = 0; ; s += 0.03) {
+              var x = 1.7 * s * Math.cos(s), y = s * Math.sin(s), ok = true;
+              for (var q = 0; q < placed.length && ok; q++) {
+                var P = placed[q], dx = (x - P[0]), dy = (y - P[1]) * 1.15;
+                if (Math.sqrt(dx * dx + dy * dy) < r + P[2] + 3.2) ok = false;
+              }
+              if (ok) { centre[i] = [x, y]; placed.push([x, y, r]); break; }
+            }
+          });
+          var pos = [], labels = [];
+          RING.forEach(function (l, li) {
+            var mine = ALL.filter(function (d) { return dots[d].li === li; }), sp = spiral(mine.length, centre[li][0], centre[li][1]);
+            mine.forEach(function (d, j) { pos[d] = sp[j]; });
+            labels.push({ x: centre[li][0], y: centre[li][1] + radii[li] + 2.2, text: l.language, li: li });
+          });
+          return fit(pos, labels);
+        }
+      },
+      review: {
+        note: 'The same sets split by who reviewed them: ' + GOLD + ' by people, ' + fmtN(TOTAL - GOLD) + ' by models. Each band is still a language, so you can see which languages fed each pile.',
+        build: function () {
+          var g = byLang(ALL.filter(function (d) { return dots[d].gold; })), s = byLang(ALL.filter(function (d) { return !dots[d].gold; }));
+          var rg = Math.sqrt(g.length), rs = Math.sqrt(s.length), gx = 0, sx = rg + rs + 8, pos = [];
+          spiral(g.length, gx, 0).forEach(function (p, j) { pos[g[j]] = p; });
+          spiral(s.length, sx, 0).forEach(function (p, j) { pos[s[j]] = p; });
+          return fit(pos, [
+            { x: gx, y: rg + 3, text: 'Gold', sub: GOLD + ' sets · reviewed by people', big: true },
+            { x: sx, y: rs + 3, text: 'Silver', sub: fmtN(TOTAL - GOLD) + ' sets · reviewed by models', big: true }
+          ]);
+        }
+      }
+    };
+
+    function drawLabels(list) {
+      labLayer.textContent = '';
+      list.forEach(function (l) {
+        var t = svg('text', { class: 'isl-lab' + (l.big ? ' big' : ''), x: l.x.toFixed(1), y: l.y.toFixed(1), opacity: 0 }, labLayer);
+        t.textContent = l.text;
+        if (l.sub) { var s = svg('tspan', { class: 'isl-sub', x: l.x.toFixed(1), dy: '16' }, t); s.textContent = l.sub; }
+        if (l.li !== undefined) t.setAttribute('data-li', l.li);
+        requestAnimationFrame(function () { t.setAttribute('opacity', focused >= 0 && l.li !== undefined && l.li !== focused ? .3 : 1); });
+      });
+    }
+    var mode = null, stop = function () {};
+    function setMode(m) {
+      if (m === mode) return;
+      mode = m; stop();
+      document.querySelectorAll('#c [data-mode]').forEach(function (b) { b.setAttribute('aria-pressed', String(b.getAttribute('data-mode') === m)); });
+      document.getElementById('c-note').textContent = MODES[m].note;
+      var L = MODES[m].build();
+      Array.prototype.forEach.call(labLayer.childNodes, function (t) { t.setAttribute('opacity', 0); });
+      var from = dots.map(function (d) { return [d.x, d.y, d.r]; });
+      stop = tween(1500, function (T) {
+        dots.forEach(function (d, i) {
+          var t = ease(clamp((T - d.delay) / (1 - .35)));
+          d.x = from[i][0] + (L.pos[i][0] - from[i][0]) * t;
+          d.y = from[i][1] + (L.pos[i][1] - from[i][1]) * t;
+          d.r = from[i][2] + (L.r - from[i][2]) * t;
+          d.el.setAttribute('cx', d.x.toFixed(1)); d.el.setAttribute('cy', d.y.toFixed(1)); d.el.setAttribute('r', d.r.toFixed(2));
+        });
+      }, function () { drawLabels(L.labels); });
+    }
+    document.querySelectorAll('#c [data-mode]').forEach(function (b) {
+      b.addEventListener('click', function () { setMode(b.getAttribute('data-mode')); });
+    });
+
+    var focused = -1, pinned = false;
+    function focus(i) {
+      focused = i;
+      groups.forEach(function (g, j) { g.classList.toggle('on', j === i); g.classList.toggle('dim', i >= 0 && j !== i); });
+      Array.prototype.forEach.call(labLayer.querySelectorAll('[data-li]'), function (t) {
+        t.setAttribute('opacity', i >= 0 && +t.getAttribute('data-li') !== i ? .3 : 1);
+      });
+      if (i < 0) { show(null); return; }
+      var L = RING[i];
+      show(L, mode === 'review' ? (L.gold ? 'Split across both piles' : 'All in the silver pile') : mode === 'trunk' ? 'Band ' + (i + 1) + ' of ' + NL + ', counting from the core' : 'Island');
+    }
+    function nearest(e) {
+      var p = toSvg(host, e), best = -1, bd = Infinity;
+      dots.forEach(function (d) { var dx = d.x - p.x, dy = d.y - p.y, dd = dx * dx + dy * dy; if (dd < bd) { bd = dd; best = d.li; } });
+      var lim = Math.max(8, dots[0].r * 3.5);
+      return bd <= lim * lim ? best : -1;
+    }
+    host.addEventListener('pointermove', function (e) { if (pinned) return; var i = nearest(e); if (i !== focused) focus(i); });
+    host.addEventListener('pointerleave', function () { if (!pinned) focus(-1); });
+    host.addEventListener('click', function (e) { var i = nearest(e); pinned = i >= 0 && !(pinned && i === focused); focus(i); keys.set(i); });
+    var keys = keyStepper(host, function () { return RING.map(function (l, i) { return i; }); }, function (i) { pinned = i >= 0; focus(i); });
+
+    // start from the trunk; dots grow out from the centre once the chart is on screen
+    var started = false;
+    function start() { if (started) return; started = true; setMode('trunk'); }
+    if ('IntersectionObserver' in window) {
+      var io = new IntersectionObserver(function (es) { if (es[0].isIntersecting) { io.disconnect(); start(); } }, { threshold: .25 });
+      io.observe(host);
+    } else start();
+  })();
+
+  /* theme switch */
+  document.querySelectorAll('[data-set-theme]').forEach(function (b) {
+    b.addEventListener('click', function () {
+      var t = b.getAttribute('data-set-theme');
+      document.documentElement.setAttribute('data-theme', t);
+      try { localStorage.setItem('harley-theme', t); } catch (e) {}
+    });
+  });
+})();
+</script>
+</body>
+</html>
