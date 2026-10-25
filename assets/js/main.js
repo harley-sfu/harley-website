@@ -118,20 +118,11 @@
 
     svg('circle', { cx: C, cy: C, r: R0 + step * (gold.length - 0.5), class: 'heart' }, host);
 
-    function wobble(i) {
-      var ph1 = rnd() * 6.28, ph2 = rnd() * 6.28, amp = 0.9 + i * 0.07;
-      return function (t) { return amp * (Math.sin(3 * t + ph1) * 0.6 + Math.sin(7 * t + ph2) * 0.4); };
-    }
     var groups = [];
     order.forEach(function (lang, i) {
-      var r = R0 + i * step, w = wobble(i);
+      var r = R0 + i * step;
       var g = svg('g', { class: 'lang grow' }, host);
-      var d = '';
-      for (var a = 0; a <= 360; a += 3) {
-        var t = a * Math.PI / 180, rr = r + w(t);
-        d += (a ? 'L' : 'M') + (C + rr * Math.cos(t)).toFixed(2) + ' ' + (C + rr * Math.sin(t)).toFixed(2);
-      }
-      svg('path', { d: d + 'Z', class: 'ring' }, g);
+      svg('circle', { cx: C, cy: C, r: r, class: 'ring' }, g);
       var n = lang.gold + lang.silver, off = rnd() * Math.PI * 2;
       // the reviewed (gold) sets sit at random places on their ring, like knots in the grain
       var slots = []; for (var q = 0; q < n; q++) slots.push(q);
@@ -140,7 +131,7 @@
       for (var k = 0; k < n; k++) {
         var isGold = !!goldSet[k];
         var t2 = off + (k + (rnd() - 0.5) * 0.55) * (Math.PI * 2 / n);
-        var rr2 = r + w(t2), len = isGold ? 4.2 : 3.2;
+        var rr2 = r, len = isGold ? 4.2 : 3.2;
         svg('line', {
           x1: (C + (rr2 - len) * Math.cos(t2)).toFixed(2), y1: (C + (rr2 - len) * Math.sin(t2)).toFixed(2),
           x2: (C + (rr2 + len) * Math.cos(t2)).toFixed(2), y2: (C + (rr2 + len) * Math.sin(t2)).toFixed(2),
