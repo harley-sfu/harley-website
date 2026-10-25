@@ -32,7 +32,7 @@ None of these run with reduced motion turned on; the content is all still there.
 | Section | Shows | Source |
 |---|---|---|
 | Hero rings | all 1,591 sets by language; heavier marks = the 200 gold sets | gold and silver H/J label files |
-| *The verses* | three example sets (zh / en / ar) unrolling prompt by prompt, with each prompt's 17 models × 5 samples outcome grid and one featured answer | `analysis/main.parquet` + `data/curated.json` |
+| *The verses* | first a guessing game (`assets/js/guess.js`): pick which of a set's five prompts broke the most models (3+ of 5 misaligned, or 3+ of 5 answered for a jailbreak), then see the counts; below it, three example sets (zh / en / ar) unrolling prompt by prompt, with each prompt's 17 models × 5 samples outcome grid and one featured answer | `analysis/main.parquet` + `data/curated.json` |
 | I · pressure | misalignment on A vs T per model (dumbbells) | recomputed from the three judge passes |
 | II · the split | 60 H / 140 J sets; refusal change J−T and H−A per model | the paper's per-model values (Figure 2) |
 | III · prophecy | 200 targets ranked by Gemma 4 31B + Qwen 3.8 27B, with the 31 frontier failures; drag the cutoff | recomputed |

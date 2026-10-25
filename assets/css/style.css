@@ -565,6 +565,91 @@ h3 { margin: 0 0 12px; font: 600 13px/1.4 var(--sans); letter-spacing: .14em; te
 .copy:hover { color: var(--ink); border-color: var(--ink-3); }
 .fineprint { margin-top: 56px; font-size: 12.5px; color: var(--ink-3); max-width: 720px; }
 
+/* ---------- guess ---------- */
+.gq { margin-top: 40px; }
+.gq-lede { margin: 0 0 22px; max-width: 66ch; font-size: 15px; line-height: 1.55; color: var(--ink-2); }
+/* the guess and the scroll share one section; this label opens the scroll's half */
+.verses-title { margin: clamp(56px, 8vw, 88px) 0 0; padding-top: 28px; border-top: 1px solid var(--rule); }
+.verses-title + .scroll-controls { margin-top: 18px; }
+.gq-top { display: flex; align-items: center; gap: 10px 16px; flex-wrap: wrap; margin: 0 0 14px; }
+.gq-round { flex: 1 1 auto; display: flex; align-items: center; gap: 14px; flex-wrap: wrap; font: 500 13px/1.3 var(--sans); color: var(--ink-3); }
+.gq-score { font: 500 13px/1.3 var(--sans); color: var(--ink-3); }
+.gq-score b { color: var(--ink); font-weight: 600; }
+.gq-set { font: 500 22px/1.1 var(--serif); color: var(--ink); }
+.gq-progress { display: inline-flex; gap: 5px; }
+.gq-progress i { width: 9px; height: 9px; border-radius: 50%; border: 1px solid var(--ink-3); }
+.gq-progress i.on { background: var(--ink-3); }
+.gq-progress i.hit { background: var(--feat); border-color: var(--feat); }
+.gq-progress i.miss { background: var(--o-mis); border-color: var(--o-mis); }
+
+/* a prompt card is a button until the answer is shown */
+.gq-card {
+  display: grid; grid-template-columns: 44px minmax(0, 1fr) 240px; gap: 6px 18px; align-items: center; width: 100%; text-align: left;
+  font: inherit; color: inherit; background: var(--surface); border: 1px solid var(--rule); border-radius: 12px; padding: 14px 16px; cursor: pointer;
+  transition: border-color .2s;
+}
+.gq-card + .gq-card { margin-top: 8px; }
+.gq-card:hover:not([disabled]) { border-color: var(--ink-3); }
+.gq-card[disabled] { cursor: default; }
+.gq-card:focus-visible, .gq-btn:focus-visible { outline: 2px solid var(--A); outline-offset: 2px; }
+.gq-badge {
+  width: 34px; height: 34px; border-radius: 50%; display: grid; place-items: center; border: 1px dashed var(--ink-3);
+  font: 600 14px/1 var(--sans); color: var(--ink-3); transition: background .3s, color .3s;
+}
+.gq-card.shown .gq-badge { border: 0; background: var(--c); color: var(--bg); }
+.gq-role { display: block; font: 600 10.5px/1 var(--sans); letter-spacing: .14em; text-transform: uppercase; color: var(--c); }
+.gq-card.shown .gq-role { margin-bottom: 6px; }
+.gq-txt { font: 400 15.5px/1.5 var(--text-serif); color: var(--ink); }
+.gq-orig-txt { display: none; margin-top: 6px; font-size: 14.5px; line-height: 1.6; color: var(--ink-2); }
+.gq.show-orig .gq-orig-txt { display: block; }
+.gq-orig-txt[lang="zh"] { font-family: var(--zh); }
+.gq-orig-txt[lang="ar"] { font-family: var(--ar); }
+.gq-res { opacity: 0; transform: translateY(4px); transition: opacity .4s, transform .4s; }
+.gq-card.shown .gq-res { opacity: 1; transform: none; }
+.gq-n { font: 500 30px/1 var(--serif); color: var(--ink); font-variant-numeric: tabular-nums; }
+.gq-n small { font: 500 12px/1 var(--sans); color: var(--ink-3); margin-left: 6px; }
+.gq-strip { display: grid; grid-template-columns: repeat(17, 1fr); gap: 3px; margin-top: 10px; max-width: 240px; }
+.gq-strip i, .gq-key i { aspect-ratio: 1; border-radius: 2px; background: var(--o-ok); }
+.gq-strip i.b, .gq-key i.b { background: var(--o-mis); }
+.gq-strip i.w, .gq-key i.w { background: var(--o-weak); }
+.gq-strip i.j, .gq-key i.j { background: var(--J); }
+.gq-flag { display: inline-block; margin-top: 8px; font: 600 10.5px/1 var(--sans); letter-spacing: .12em; text-transform: uppercase; padding: 4px 7px; border-radius: 4px; }
+.gq-flag.most { background: var(--o-mis); color: #fff; }
+.gq-flag.you { border: 1px solid var(--ink-3); color: var(--ink-2); margin-left: 4px; }
+.gq-card.picked { border-color: var(--ink); }
+.gq-card.winner { border-color: var(--o-mis); box-shadow: 0 0 0 1px var(--o-mis); }
+
+.gq-after { margin-top: 18px; }
+.gq-btn {
+  flex-shrink: 0; font: 500 12.5px/1 var(--sans); padding: 8px 12px; border-radius: 999px; border: 1px solid var(--ink);
+  background: var(--ink); color: var(--bg); cursor: pointer; white-space: nowrap;
+}
+.gq-btn[hidden], .gq-next[hidden] { display: none; }
+/* the way on to the next set: big enough to find straight after the reveal */
+.gq-next {
+  display: inline-flex; align-items: center; gap: 18px; padding: 12px 18px 12px 22px; border-radius: 999px; border: 0; cursor: pointer;
+  background: var(--ink); color: var(--bg); font: 600 15px/1.2 var(--sans); text-align: left;
+  box-shadow: 0 6px 18px rgba(0,0,0,.18); transition: transform .15s, box-shadow .15s;
+}
+.gq-next small { display: block; margin-top: 2px; font: 400 12.5px/1.2 var(--sans); opacity: .7; }
+.gq-next i { font-style: normal; font-size: 20px; animation: gq-nudge 1.4s ease-in-out 3; }
+.gq-next:hover { transform: translateY(-1px); box-shadow: 0 8px 22px rgba(0,0,0,.24); }
+.gq-next:focus-visible { outline: 2px solid var(--A); outline-offset: 3px; }
+@keyframes gq-nudge { 0%, 100% { transform: none; } 50% { transform: translateX(4px); } }
+.gq-btn.gq-orig { background: transparent; color: var(--ink-2); border-color: var(--rule); }
+.gq-btn.gq-orig:hover { color: var(--ink); border-color: var(--ink-3); }
+.gq-btn.gq-orig[aria-pressed="true"] { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+.gq-foot { display: flex; justify-content: space-between; align-items: center; gap: 12px 20px; flex-wrap: wrap; margin-top: 18px; }
+.gq-key { display: flex; gap: 16px; flex-wrap: wrap; list-style: none; padding: 0; margin: 0; font: 500 12px/1.3 var(--sans); color: var(--ink-3); }
+.gq-key li { display: flex; align-items: center; gap: 7px; }
+.gq-key i { width: 11px; }
+.gq-fine { margin: 10px 0 0; font: 400 12.5px/1.5 var(--sans); color: var(--ink-3); max-width: 80ch; }
+
+@media (max-width: 760px) {
+  .gq-card { grid-template-columns: 36px minmax(0, 1fr); }
+  .gq-res { grid-column: 2; }
+}
+
 /* ---------- tooltip ---------- */
 .tooltip {
   position: fixed; z-index: 50; pointer-events: none; padding: 7px 10px; border-radius: 8px;
