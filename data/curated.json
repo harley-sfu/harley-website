@@ -2,7 +2,7 @@
   "_note": "Hand-curated content for the site. Prompt texts and outcome grids are pulled from the release by scripts/build_data.py; translations and response excerpts live here so they can be reviewed. Translations are ours and should be checked by native speakers before launch.",
   "paper": {
     "_source": "Paper text and the per-model values printed in figures/fig_hj_ladder.pdf (harley2026-naacl @ 378cbd8).",
-    "sets": 1591, "gold_sets": 200, "languages": 17, "gold_languages": 10, "models": 17, "responses": 85000,
+    "sets": 5215, "silver_sets": 5015, "gold_sets": 200, "languages": 17, "gold_languages": 10, "models": 17, "responses": 85000,
     "pressures": 122, "pressure_classes": 12, "behaviours": 57, "behaviour_groups": 11,
     "split": {"H": 60, "J": 140, "J_pretext": 61, "J_claimed_fact": 79},
     "mis": {"A": 4.3, "T": 20.4, "P": 22.1, "S": 1.8, "diff": 16.1, "ci": [13.3, 19.0]},

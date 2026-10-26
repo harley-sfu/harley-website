@@ -31,7 +31,7 @@ None of these run with reduced motion turned on; the content is all still there.
 
 | Section | Shows | Source |
 |---|---|---|
-| Hero rings | all 1,591 sets by language; heavier marks = the 200 gold sets | gold and silver H/J label files |
+| Hero rings | all 5,215 sets by language; heavier marks = the 200 gold sets | gold and silver H/J label files |
 | *The verses* | first a guessing game (`assets/js/guess.js`): pick which of a set's five prompts broke the most models (3+ of 5 misaligned, or 3+ of 5 answered for a jailbreak), then see the counts; below it, three example sets (zh / en / ar) unrolling prompt by prompt, with each prompt's 17 models × 5 samples outcome grid and one featured answer | `analysis/main.parquet` + `data/curated.json` |
 | I · pressure | misalignment on A vs T per model (dumbbells) | recomputed from the three judge passes |
 | II · the split | 60 H / 140 J sets; refusal change J−T and H−A per model | the paper's per-model values (Figure 2) |
@@ -48,11 +48,21 @@ python3 scripts/build_data.py \
   --silver   /path/to/derived/hard_negative_audit/silver_hard_negative_labels.csv
 ```
 
+To update the collection counts and language rings without recomputing the response study, first update the release counts in `data/curated.json`, then run:
+
+```bash
+python3 scripts/build_data.py --composition-only \
+  --gold   /path/to/hard_negative_gold_reviewed_labels.csv \
+  --silver /path/to/derived/hard_negative_audit/silver_hard_negative_labels.csv
+```
+
+This mode checks for unique, disjoint candidate IDs and verifies the 200 gold and 5,015 silver counts. It preserves the existing response results and examples, and records the silver label file's SHA-256 in `built_from`.
+
 Before writing anything, the script checks its results against the paper:
 - pooled A, T and S misalignment (4.3 / 20.4 / 1.8);
 - T−A (+16.1), which also matches all 17 per-model values in Figure 2;
 - 31 screening positives (AUC 0.876, with 28 of 31 in the top third);
-- 1,591 sets in 17 languages.
+- 5,215 sets in 17 languages.
 
 ## Before going public
 

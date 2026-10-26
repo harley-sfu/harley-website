@@ -108,7 +108,7 @@
     <div>
       <p class="tag">Lab · hero visual samples</p>
       <h1>Three ways to read the rings</h1>
-      <p>Each sample uses the real counts: 1,591 contrast sets in 17 languages, 200 of them human-reviewed (gold). They are all meant to be played with, which the paper and code can't offer. Hover or tap anything. Every chart can also be focused with Tab and stepped through with the arrow keys.</p>
+      <p>Each sample uses the real counts: 5,215 contrast sets in 17 languages, 200 of them human-reviewed (gold). They are all meant to be played with, which the paper and code can't offer. Hover or tap anything. Every chart can also be focused with Tab and stepped through with the arrow keys.</p>
     </div>
     <div class="theme-switch" role="group" aria-label="Colour theme">
       <button type="button" data-set-theme="light" title="Light mode">
@@ -125,7 +125,7 @@
   <!-- ===================== A ===================== -->
   <section class="sample" id="a">
     <figure class="sample-fig">
-      <svg id="a-svg" viewBox="0 0 480 480" tabindex="0" role="img" aria-label="1,591 contrast sets as 17 rings, one per language. Use the arrow keys to step through the rings."></svg>
+      <svg id="a-svg" viewBox="0 0 480 480" tabindex="0" role="img" aria-label="5,215 contrast sets as 17 rings, one per language. Use the arrow keys to step through the rings."></svg>
     </figure>
     <div>
       <p class="tag">Sample A</p>
@@ -199,12 +199,12 @@
   <!-- ===================== C ===================== -->
   <section class="sample" id="c">
     <figure class="sample-fig">
-      <svg id="c-svg" viewBox="0 0 640 470" tabindex="0" role="img" aria-label="1,591 dots, one per contrast set, which regroup into a trunk, islands per language, or gold and silver piles. Use the arrow keys to step through the languages."></svg>
+      <svg id="c-svg" viewBox="0 0 640 470" tabindex="0" role="img" aria-label="5,215 dots, one per contrast set, which regroup into a trunk, islands per language, or gold and silver piles. Use the arrow keys to step through the languages."></svg>
     </figure>
     <div>
       <p class="tag">Sample C</p>
       <h2>One dot per set, three views</h2>
-      <p class="pitch">All 1,591 sets as dots that fly between views. The trunk keeps the tree-ring look, the islands compare languages, and the gold/silver view shows where each language's reviewed sets went.</p>
+      <p class="pitch">All 5,215 sets as dots that fly between views. The trunk keeps the tree-ring look, the islands compare languages, and the gold/silver view shows where each language's reviewed sets went.</p>
       <ul class="lx-legend">
         <li><span class="sw gold"></span>Gold set · human-reviewed</li>
         <li><span class="sw silver"></span>Silver set · model-reviewed</li>
@@ -331,7 +331,7 @@
   (function sampleA() {
     var host = document.getElementById('a-svg');
     var show = readout(document.getElementById('a-ro'), 'Hover or tap a ring. With the chart focused, the arrow keys step outward and inward.');
-    var C = 240, R0 = 66, R1 = 226, step = (R1 - R0) / (NL - 1), rnd = mulberry32(1591);
+    var C = 240, R0 = 66, R1 = 226, step = (R1 - R0) / (NL - 1), rnd = mulberry32(D.paper.sets);
     svg('circle', { cx: C, cy: C, r: R0 + step * (GOLD_L.length - 0.5), class: 'heart' }, host);
 
     var groups = [], pinned = -1, touring = false;

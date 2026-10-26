@@ -114,7 +114,7 @@
     var rest = D.rings.filter(function (r) { return r.gold === 0; }).sort(function (a, b) { return a.silver - b.silver; });
     var order = gold.concat(rest);
     var step = (R1 - R0) / (order.length - 1);
-    var rnd = mulberry32(1591);
+    var rnd = mulberry32(D.paper.sets);
 
     svg('circle', { cx: C, cy: C, r: R0 + step * (gold.length - 0.5), class: 'heart' }, host);
 
@@ -148,10 +148,13 @@
     var lab = svg('text', { x: C, y: C + 26, class: 'center-lab' }, host);
     var lab2 = svg('text', { x: C, y: C - 28, class: 'center-lab center-sub' }, host);
     function setCenter(a, b, c) { num.textContent = a; lab.textContent = b; lab2.textContent = c || ''; }
-    setCenter('1,591', 'sets', '17 languages');
+    function resetCenter() {
+      setCenter(D.paper.sets.toLocaleString('en-US'), 'sets', D.paper.languages + ' languages');
+    }
+    resetCenter();
     function focusLang(i) {
       groups.forEach(function (x, j) { x.g.classList.toggle('dim', i >= 0 && j !== i); x.g.classList.toggle('on', j === i); });
-      if (i < 0) { setCenter('1,591', 'sets', '17 languages'); return; }
+      if (i < 0) { resetCenter(); return; }
       var L = groups[i].lang;
       setCenter(String(L.gold + L.silver), L.language, L.gold ? L.gold + ' gold set' + (L.gold === 1 ? '' : 's') : 'silver sets only');
     }
