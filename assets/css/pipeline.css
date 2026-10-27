@@ -115,7 +115,7 @@
 .pl-ghost { position: absolute; z-index: 6; box-sizing: border-box; border: 1px solid transparent; border-radius: 4px; }
 .pl-pills { position: absolute; z-index: 6; display: flex; gap: 8px; transform: translateX(-50%); }
 .pl-pill {
-  display: inline-flex; align-items: center; gap: 6px; padding: 3px 10px 3px 4px; border-radius: 999px;
+  display: inline-flex; align-items: center; gap: 6px; padding: 3px 10px 3px 4px; border-radius: 999px; white-space: nowrap;
   border: 1px solid var(--rule); background: var(--surface); font: 500 12px/1.4 var(--sans); color: var(--ink-3);
   transition: border-color .25s, color .25s, box-shadow .25s, opacity .3s;
 }

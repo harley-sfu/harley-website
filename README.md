@@ -34,7 +34,7 @@ None of these run with reduced motion turned on; the content is all still there.
 | Section | Shows | Source |
 |---|---|---|
 | Hero rings | all 5,215 sets by language; heavier marks = the 200 gold sets | gold and silver H/J label files |
-| *The verses* | first a guessing game (`assets/js/guess.js`): pick which of a set's five prompts broke the most models (3+ of 5 misaligned, or 3+ of 5 answered for a jailbreak), then see the counts; below it, three example sets (zh / en / ar) unrolling prompt by prompt, with each prompt's 17 models × 5 samples outcome grid and one featured answer | `analysis/main.parquet` + `data/curated.json` |
+| *The verses* | first a guessing game (`assets/js/guess.js`): pick which of a set's five prompts broke the most models (3+ of 5 misaligned; a jailbreak's answers are judged against its target's request), then see the counts; below it, three example sets (zh / en / ar) unrolling prompt by prompt, with each prompt's 17 models × 5 samples outcome grid and one featured answer | `analysis/main.parquet` + `data/curated.json` |
 | I · pressure | misalignment on A vs T per model (dumbbells) | recomputed from the three judge passes |
 | II · the split | 60 H / 140 J sets; refusal change J−T and H−A per model | the paper's per-model values (Figure 2) |
 | III · prophecy | 200 targets ranked by Gemma 4 31B + Qwen 3.8 27B, with the 31 frontier failures; drag the cutoff | recomputed |
@@ -47,8 +47,13 @@ None of these run with reduced motion turned on; the content is all still there.
 python3 scripts/build_data.py \
   --analysis /path/to/harley-analysis-data/analysis/main.parquet \
   --gold     /path/to/hard_negative_gold_reviewed_labels.csv \
-  --silver   /path/to/derived/hard_negative_audit/silver_hard_negative_labels.csv
+  --silver   /path/to/derived/hard_negative_audit/silver_hard_negative_labels.csv \
+  --hj       /path/to/gold_j_t_misalignment_human_extension_20261011/final_gold_hj_labels.csv \
+  --j-labels /path/to/gold_j_t_misalignment_no_context_20261011/full_report/paired_response_labels.csv \
+             /path/to/gold_j_t_misalignment_human_extension_20261011/full_report/paired_response_labels.csv
 ```
+
+A jailbreak keeps its target's request and adds a pretext the model can't check, so the example grids and the guessing game judge its responses against the target's request: the three-pass DeepSeek rejudging in `behavior-latent-library` (`response_policy_study/response_judge/j_t_relabel`, no-context run plus its human extension for the sets whose H/J group changed in review). Responses it didn't rejudge (earlier refusals, empty outputs) keep their outcome. The H/J group of each example set is checked against the human-reviewed labels.
 
 To update the collection counts and language rings without recomputing the response study, first update the release counts in `data/curated.json`, then run:
 

@@ -128,15 +128,21 @@
       var slots = []; for (var q = 0; q < n; q++) slots.push(q);
       for (var q2 = n - 1; q2 > 0; q2--) { var z = Math.floor(rnd() * (q2 + 1)); var tq = slots[q2]; slots[q2] = slots[z]; slots[z] = tq; }
       var goldSet = {}; slots.slice(0, lang.gold).forEach(function (s) { goldSet[s] = true; });
+      // a ring's marks are drawn as one path per colour, not one element per set: thousands of
+      // separate lines made every hover restyle and repaint each of them
+      var d = { gold: [], silver: [] };
       for (var k = 0; k < n; k++) {
         var isGold = !!goldSet[k];
         var t2 = off + (k + (rnd() - 0.5) * 0.55) * (Math.PI * 2 / n);
-        var rr2 = r, len = isGold ? 4.2 : 3.2;
-        svg('line', {
-          x1: (C + (rr2 - len) * Math.cos(t2)).toFixed(2), y1: (C + (rr2 - len) * Math.sin(t2)).toFixed(2),
-          x2: (C + (rr2 + len) * Math.cos(t2)).toFixed(2), y2: (C + (rr2 + len) * Math.sin(t2)).toFixed(2),
-          class: 'mark ' + (isGold ? 'gold' : 'silver')
-        }, g);
+        var len = isGold ? 4.2 : 3.2, cs = Math.cos(t2), sn = Math.sin(t2);
+        d[isGold ? 'gold' : 'silver'].push('M' + (C + (r - len) * cs).toFixed(2) + ' ' + (C + (r - len) * sn).toFixed(2) +
+          'L' + (C + (r + len) * cs).toFixed(2) + ' ' + (C + (r + len) * sn).toFixed(2));
+      }
+      if (d.silver.length) svg('path', { d: d.silver.join(''), class: 'mark silver' }, g);
+      if (d.gold.length) {
+        // under each gold mark, a paper-coloured gap in the silver, so the gold reads on a dense ring
+        svg('path', { d: d.gold.join(''), class: 'mark knock' }, g);
+        svg('path', { d: d.gold.join(''), class: 'mark gold' }, g);
       }
       var hit = svg('circle', { cx: C, cy: C, r: r, class: 'ring-hit' }, g);
       hit.addEventListener('mouseenter', function () { focusLang(i); });
@@ -264,7 +270,6 @@
         // the featured model's answer, collapsed
         var g = ex.grid[code][ex.featured_index];
         var o = OUT[g.charAt(0)] || OUT.x;
-        var oLabel = shown === 'J' && 'awm'.indexOf(g.charAt(0)) >= 0 ? 'answered' : o[0];
         var tog = el('button', { class: 'answer-toggle', type: 'button', 'aria-expanded': 'false' }, main);
         tog.innerHTML = '<span class="caret">▸</span> ' + esc(model.name) + '’s answer';
         var ans = el('div', { class: 'answer' }, main);
@@ -272,7 +277,7 @@
         var bq = el('blockquote', null, ansIn);
         bq.style.setProperty('--oc', o[2]);
         var who = el('div', { class: 'who' }, ansIn);
-        who.innerHTML = esc(model.name) + ', first of five samples · <b style="color:' + o[2] + '">' + oLabel + '</b>';
+        who.innerHTML = esc(model.name) + ', first of five samples · <b style="color:' + o[2] + '">' + o[0] + '</b>';
         tog.addEventListener('click', function () {
           var open = tog.getAttribute('aria-expanded') !== 'true';
           tog.setAttribute('aria-expanded', String(open)); ans.classList.toggle('open', open);
@@ -294,10 +299,8 @@
           for (var k = 0; k < 5; k++) {
             var c = s.charAt(k) || 'x';
             n[c] = (n[c] || 0) + 1; total++;
-            var cls = OUT[c][1];
-            if (shown === 'J' && 'awm'.indexOf(c) >= 0) cls = 'o-j';
-            el('i', { class: 'dot ' + cls + (mi === ex.featured_index ? ' feat' : '') }, grid);
-            info.push([D.models[mi].name, k, shown === 'J' && 'awm'.indexOf(c) >= 0 ? 'answered' : OUT[c][0]]);
+            el('i', { class: 'dot ' + OUT[c][1] + (mi === ex.featured_index ? ' feat' : '') }, grid);
+            info.push([D.models[mi].name, k, OUT[c][0]]);
           }
         });
         gridReader(grid, info);
@@ -306,13 +309,9 @@
         ['mouseleave', 'blur'].forEach(function (ev) { tog.addEventListener(ev, function () { outc.classList.remove('feat-on'); }); });
         var refused = n.r + n.b, mis = n.m + n.w;
         var share = el('div', { class: 'outcome-share' }, outc);
-        if (shown === 'J') {
-          share.innerHTML = '<span><b class="c-J">' + Math.round(100 * (total - refused) / total) + '%</b> are answered</span><span><b>' + Math.round(100 * refused / total) + '%</b> are refused</span>';
-          grid.setAttribute('aria-label', refused + ' of ' + total + ' responses refused. The marked column is ' + model.name + '. Arrow keys step through them.');
-        } else {
-          share.innerHTML = '<span><b class="c-T">' + Math.round(100 * mis / total) + '%</b> are misaligned</span><span><b>' + Math.round(100 * refused / total) + '%</b> are refused</span>';
-          grid.setAttribute('aria-label', mis + ' of ' + total + ' responses misaligned, ' + refused + ' refused. The marked column is ' + model.name + '. Arrow keys step through them.');
-        }
+        // a jailbreak's responses are judged against its target's request
+        share.innerHTML = '<span><b class="c-T">' + Math.round(100 * mis / total) + '%</b> are misaligned' + (shown === 'J' ? ' (judged against the target)' : '') + '</span><span><b>' + Math.round(100 * refused / total) + '%</b> are refused</span>';
+        grid.setAttribute('aria-label', mis + ' of ' + total + ' responses misaligned' + (shown === 'J' ? ' when judged against the target' : '') + ', ' + refused + ' refused. The marked column is ' + model.name + '. Arrow keys step through them.');
         // tie the percentages to the dots just above them
         share.insertAdjacentHTML('afterbegin', '<span class="share-of">Of these ' + total + ' answers:</span>');
       });

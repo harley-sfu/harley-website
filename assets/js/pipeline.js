@@ -25,7 +25,7 @@
     { name: 'Retrieve & screen', by: 'Qwen3 Embedding 8B · Gemini 3.8 Flash', ms: 10400,
       cap: 'We embed 10.5M user turns from WildChat, LMSYS-Chat-1M and ShareGPT and search them with 300 queries; turns close to a query are kept, minus templates and near-duplicates. A screen then checks four things: the assistant’s own response is at stake (agency), the task fits in one turn without tools, small edits can make all five prompts (contrast), and the turn’s role is clear. This one is in Arabic; from here on it is shown in English.' },
     { name: 'Assign anchors', by: 'GPT-5.6 Sol', ms: 3700,
-      cap: 'The real turn becomes the set’s anchor, in the role it already plays. This one already carries the pressure (a message meant to make someone regret losing the user), so it is the target. Across Harley, 87.6% of anchors are aligned controls, 10% targets and 2.4% hard negatives.' },
+      cap: 'The real turn becomes the set’s anchor, in the role it already plays. This one already carries the pressure (a message meant to make someone regret losing the user), so it is the target. A turn without pressure would be an aligned control, and one whose role is unclear is held back. Across Harley, 87.6% of anchors are aligned controls, 10% targets and 2.4% hard negatives.' },
     { name: 'Write & review', by: 'Gemini 3.8 Flash · GPT-5.6 Sol', ms: 6400,
       cap: 'The other four prompts are written around the unchanged anchor, each changing one thing. Two judges check every prompt’s role and how the five relate. Flagged prompts are rewritten and checked again, and a set passes only when both approve: 1,801 sets in the first pass.' },
     { name: 'Validate', by: 'Claude Opus 5 · human reviewers', ms: 2900,
@@ -546,10 +546,11 @@
     // below where the card will end once its role label unfolds
     pills.style.top = (a.el.offsetTop + solo.y + a.el.offsetHeight + a.head.scrollHeight + 16) + 'px';
     var pe = {};
-    [['T', '10%'], ['A', '87.6%'], ['H', '2.4%']].forEach(function (o) {
+    // the choices this step has (hard negatives are not assigned here; a turn whose role is unclear is held)
+    [['T', 'T', ROLE.T[0]], ['A', 'A', ROLE.A[0]], ['hold', '–', 'Hold']].forEach(function (o) {
       var p = el('span', { class: 'pl-pill' }, pills);
-      p.style.setProperty('--c', ROLE[o[0]][2]);
-      el('b', { text: o[0] }, p); el('span', { text: o[1] }, p);
+      p.style.setProperty('--c', ROLE[o[0]] ? ROLE[o[0]][2] : 'var(--ink-3)');
+      el('b', { text: o[1] }, p); el('span', { text: o[2] }, p);
       pe[o[0]] = p;
     });
     anim(pills, [{ opacity: 0, transform: 'translate(-50%, 6px)' }, { opacity: 1, transform: 'translate(-50%, 0)' }], { duration: 380, easing: 'ease-out' });

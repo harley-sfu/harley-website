@@ -224,12 +224,15 @@ h3 { margin: 0 0 12px; font: 600 13px/1.4 var(--sans); letter-spacing: .14em; te
 .rings-figure figcaption { margin-top: 10px; text-align: center; font-size: 12.5px; color: var(--ink-3); }
 #rings .ring { fill: none; stroke: var(--rule); stroke-width: 1; transition: stroke .2s; }
 #rings .ring-hit { fill: none; stroke: transparent; stroke-width: 11; cursor: pointer; pointer-events: stroke; }
-#rings .mark { stroke-linecap: round; transition: opacity .2s, stroke .2s; }
+#rings .mark { fill: none; stroke-linecap: round; transition: opacity .2s, stroke .2s; }
 #rings .mark.gold { stroke: var(--J); stroke-width: 1.7; }
 #rings .mark.silver { stroke: var(--ink-3); stroke-width: 1; opacity: .42; }
-#rings g.lang.dim .mark { opacity: .12; }
+#rings g.lang.dim .mark:not(.knock) { opacity: .12; }
 #rings g.lang.on .ring { stroke: var(--ink-2); }
-#rings g.lang.on .mark.silver { opacity: 1; stroke: var(--ink-2); }
+#rings g.lang.on .mark.silver { opacity: .75; stroke: var(--ink-2); }
+#rings .mark.knock { stroke: var(--paper); stroke-width: 5; opacity: 0; }
+#rings g.lang.on .mark.knock { opacity: 1; }
+#rings g.lang.on .mark.gold { stroke-width: 2.2; }
 #rings .heart { fill: var(--paper); opacity: .7; }
 #rings .center-num { font: 500 40px/1 var(--serif); fill: var(--ink); text-anchor: middle; }
 #rings .center-lab { font: 500 10px/1 var(--sans); letter-spacing: .18em; text-transform: uppercase; fill: var(--ink-3); text-anchor: middle; }
@@ -389,7 +392,6 @@ h3 { margin: 0 0 12px; font: 600 13px/1.4 var(--sans); letter-spacing: .14em; te
 .o-a { background: var(--o-ok); }
 .o-r { background: transparent; box-shadow: inset 0 0 0 1.4px var(--o-ref); }
 .o-x { background: transparent; box-shadow: inset 0 0 0 1px var(--rule); }
-.o-j { background: var(--J); opacity: .6; }
 .outcome-share { margin-top: 8px; font-size: 12.5px; color: var(--ink-2); line-height: 1.5; display: flex; flex-direction: column; }
 .outcome-share .share-of { font-size: 11.5px; color: var(--ink-3); margin-bottom: 2px; }
 .outcome-share b { font: 600 15px/1 var(--sans); font-variant-numeric: tabular-nums; }
@@ -616,7 +618,6 @@ h3 { margin: 0 0 12px; font: 600 13px/1.4 var(--sans); letter-spacing: .14em; te
 .gq-strip i, .gq-key i { aspect-ratio: 1; border-radius: 2px; background: var(--o-ok); }
 .gq-strip i.b, .gq-key i.b { background: var(--o-mis); }
 .gq-strip i.w, .gq-key i.w { background: var(--o-weak); }
-.gq-strip i.j, .gq-key i.j { background: var(--J); }
 .gq-flag { display: inline-block; margin-top: 8px; font: 600 10.5px/1 var(--sans); letter-spacing: .12em; text-transform: uppercase; padding: 4px 7px; border-radius: 4px; }
 .gq-flag.most { background: var(--o-mis); color: #fff; }
 .gq-flag.you { border: 1px solid var(--ink-3); color: var(--ink-2); margin-left: 4px; }

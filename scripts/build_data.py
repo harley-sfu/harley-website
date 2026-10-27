@@ -4,6 +4,9 @@ Everything numeric on the site comes from here. Inputs:
   --analysis   analysis/main.parquet from harley-sfu/harley-analysis-data (85,000 gold responses, 3 judge passes)
   --gold       gold H/J label file with a `language` column (one row per gold set)
   --silver     derived/hard_negative_audit/silver_hard_negative_labels.csv (one row per silver set)
+  --j-labels   full_report/paired_response_labels.csv from the jailbreak rejudging against T (the no-context run,
+               then its human extension); a jailbreak's responses are judged against its target's request
+  --hj         final_gold_hj_labels.csv, the human-reviewed H/J group of each gold set
   data/curated.json  paper numbers, translations and response excerpts (hand-written, reviewed)
 
 Definitions follow the paper (Section 3): the final label of a response is the majority of the three judge
@@ -11,7 +14,7 @@ passes (two misalignment votes of different strength give weak misalignment); mi
 misalignment and misaligned; refusal counts aligned refusals and provider blocks. Rates are shares of the five
 samples per model, set and condition, averaged over sets; pooled values average the 17 models.
 
-Run:  python scripts/build_data.py --analysis PATH --gold PATH --silver PATH
+Run:  python scripts/build_data.py --analysis PATH --gold PATH --silver PATH --hj PATH --j-labels PATH [PATH ...]
 """
 import argparse, collections, csv, difflib, hashlib, json, re, sys
 from pathlib import Path
@@ -163,6 +166,9 @@ def main():
     ap.add_argument('--analysis')
     ap.add_argument('--gold', required=True)
     ap.add_argument('--silver', required=True)
+    ap.add_argument('--hj', help='final_gold_hj_labels.csv (human-reviewed H/J groups)')
+    ap.add_argument('--j-labels', nargs='+', default=[],
+                    help='paired_response_labels.csv files from the jailbreak rejudging against T; later files win')
     ap.add_argument('--composition-only', action='store_true',
                     help='Update release counts and language rings, preserving all response analyses.')
     args = ap.parse_args()
@@ -183,13 +189,13 @@ def main():
         write_site_data(out)
         print('Preserved models, pooled results, screening, and examples from the existing gold analysis.')
         return
-    if not args.analysis:
-        ap.error('--analysis is required unless --composition-only is set')
+    if not (args.analysis and args.hj and args.j_labels):
+        ap.error('--analysis, --hj and --j-labels are required unless --composition-only is set')
     import pandas as pd
     names = cur['model_names']
 
     d = pd.read_parquet(args.analysis, columns=[
-        'model', 'set_number', 'language', 'variant_code', 'sample_index', 'status', 'anchor_role',
+        'response_id', 'model', 'set_number', 'language', 'variant_code', 'sample_index', 'status', 'anchor_role',
         'prompt_text', 'label_pass1', 'label_pass2', 'label_pass3'])
     d['maj'] = [majority(x) for x in zip(d.label_pass1, d.label_pass2, d.label_pass3)]
     d['mis'] = d.maj.isin(POS)
@@ -199,7 +205,7 @@ def main():
     per_set = d.groupby(['model', 'set_number', 'variant_code']).mis.mean().unstack('variant_code')
     by_model = per_set.groupby(level='model').mean() * 100
     effect = ((per_set['T'] - per_set['A']).groupby(level='model').mean() * 100)
-    order = effect.sort_values(ascending=False).index.tolist()
+    order = sorted(effect.index, key=lambda m: (-round(effect[m], 6), m))   # ties (Gemma 4 12B / E4B) by id
     models = []
     for m in order:
         row = by_model.loc[m]
@@ -235,9 +241,25 @@ def main():
     print(f'screening: {screening["positives"]} positives, AUC {auc:.3f}, top third finds {top_third}')
 
     # ---------- example sets ----------
+    # A jailbreak keeps the target's request, so its responses are judged against the target's request (the
+    # rejudging's three-pass majority). Responses it did not rejudge (earlier refusals, empty outputs) keep
+    # their outcome.
+    with open(args.hj) as f:
+        group = {int(r['set_number']): r['final_group'] for r in csv.DictReader(f)}
+    assert collections.Counter(group.values()) == {'J': cur['paper']['split']['J'], 'H': cur['paper']['split']['H']}
+    jlab = {}
+    for path in args.j_labels:
+        with open(path) as f:
+            for r in csv.DictReader(f):
+                jlab[int(r['response_id'])] = r['j_label'] or 'tie'
     examples = []
     for ex in cur['examples']:
-        x = d[d.set_number == ex['set']]
+        assert ex['fifth'] == group[ex['set']], (ex['set'], ex['fifth'], group[ex['set']])
+        x = d[d.set_number == ex['set']].copy()
+        if ex['fifth'] == 'J':
+            redo = (x.variant_code == 'H') & x.response_id.isin(jlab)
+            x.loc[redo, 'maj'] = x.loc[redo, 'response_id'].map(jlab)
+            assert redo.sum() > 0
         anchor = ANCHOR[x.anchor_role.iloc[0]]
         prompts = x.groupby('variant_code').prompt_text.first().to_dict()
         en = ex['prompts_en'] or prompts
@@ -261,7 +283,10 @@ def main():
     out = {'paper': cur['paper'], 'models': models, 'pooled': pooled, 'screening': screening,
            'examples': examples, 'rings': rings,
            'built_from': {'analysis': Path(args.analysis).name, 'gold': Path(args.gold).name,
-                          'silver': Path(args.silver).name}}
+                          'silver': Path(args.silver).name,
+                          'silver_sha256': hashlib.sha256(Path(args.silver).read_bytes()).hexdigest(),
+                          'hj': Path(args.hj).name,
+                          'j_labels': [Path(p).parent.parent.name + '/' + Path(p).name for p in args.j_labels]}}
     write_site_data(out)
     print(f'pooled {pooled}')
 
