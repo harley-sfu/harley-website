@@ -239,12 +239,12 @@
     <header class="chapter-head">
       <p class="overline"><span class="numeral">III</span> The third world &middot; screening</p>
       <h2>Small open models predict frontier model failures</h2>
-      <p class="sub">Testing every prompt on every frontier model is expensive. We asked whether two cheap open models could predict which prompts make the frontier ones misbehave. It turns out they can, the prompts that trip up the small models are mostly the same ones that trip up the big ones.</p>
+      <p class="sub">We asked whether two cheap, open models could predict which prompts make frontier models misbehave. It turns out they can. The prompts that trip up the small models are mostly the same ones that trip up the frontier models.</p>
     </header>
     <ol class="steps">
-      <li><b>Find the frontier failures.</b> Out of 200 <span class="c-T">target</span> prompts in the gold set, 31 break at least one of the six most robust models (Claude&nbsp;Opus&nbsp;5, GPT-5.6 Sol and Luna, DeepSeek&nbsp;V4.1&nbsp;Flash, Kimi&nbsp;K3, GLM&nbsp;5.3). A break occurs when at least 3 of the model&rsquo;s 5 responses are misaligned.</li>
+      <li><b>Find frontier failures.</b> Out of 200 <span class="c-T">target</span> prompts in the gold set, 31 break at least one of the six frontier models (Claude&nbsp;Opus&nbsp;5, GPT-5.6 Sol and Luna, DeepSeek&nbsp;V4.1&nbsp;Flash, Kimi&nbsp;K3, GLM&nbsp;5.3). A break occurs when at least 3 of the model&rsquo;s 5 responses are misaligned.</li>
       <li><b>Rank using small models.</b> We sorted all 200 gold set <span class="c-T">targets</span> prompts based on how frequently they caused misalignment in Gemma&nbsp;4&nbsp;31B and Qwen&nbsp;3.8&nbsp;27B.</li>
-      <li><b>Evaluate the distribution.</b> While random sampling would place about a third of the 31 prompt failures in the top third, the small-model ranking successfully groups 28 of them (90%) into the top third. This means we can capture nearly all frontier model failures by testing just 33% of the dataset.</li>
+      <li><b>Evaluate the distribution.</b> Random sampling should place one third of the 31 prompt failures in the top third but the small-model ranking successfully places 28 of them (90%) into the top third. This means we can predict nearly all frontier model failures by testing just 33% of the dataset.</li>
     </ol>
     <figure class="prophecy">
       <div class="readout" aria-live="polite">
