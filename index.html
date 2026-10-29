@@ -259,9 +259,9 @@
       </div>
       <div class="axis-labels"><span>ranked first</span><span>ranked last</span></div>
       <figcaption>
-        <p><b>How to read it.</b> Each tick is a target prompt, ordered left to right from the one the small models fail most often to the one they fail least. Tall ticks are the 31 that broke a frontier model.</p>
-        <p>Drag to choose how many prompts to test. The solid curve counts the failures you'd catch; the dashed line is a random order, where testing 33% of prompts should catch about 33% of failures. The gap between the two lines is how much the ranking beats chance. Hover or click a card above to highlight that model's failures.</p>
-        <p>Overall AUC is 0.88 (1 = all 31 first, 0.5 = chance). On the matched <span class="c-A">aligned controls</span> it drops to 0.68, so the small models are picking up the pressure, not just the topic.</p>
+        <p>Every tick is a target prompt in the gold set and tall ticks are prompts that broke at least one frontier model. The ticks are ordered from left to right, from those failed most often by the small models to the ones failed the least often.</p>
+        <p>Drag the slider to change how many prompts to test. The solid line represents the percentage of failures caught. The dashed line represents the expected percentage of failures caught in a random sample (e.g. 33% of prompts should catch 33% of failures). The gap between the two lines represents how much the small model ranking beats random chance. Hover or click a model card to highlight the model&rsquo;s failed prompts.</p>
+        <p>The overall AUC of the small model ranking is 0.88 (1.0 = all 31 first, 0.5 = chance). When evaluating instead on the matched <span class="c-A">aligned controls</span>, the AUC drops to 0.68. This means that the small models are picking up on the pressure and not just the topic.</p>
       </figcaption>
     </figure>
   </section>
