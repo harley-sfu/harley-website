@@ -91,20 +91,20 @@
     <header class="chapter-head">
       <p class="overline">Introduction</p>
       <h2>Not all misalignment is dramatic</h2>
-      <p class="sub">Much of what causes misalignment in a model is through giving into user pressure. A user may demand an unsupported conclusion, like faked experiment results, or hide a harmful task inside a legitimate request.</p>
+      <p class="sub">A significant proportion of misalignment occurs when language models give into user pressure. Users may try to conceal harmful tasks within legitimate requests or ask to fabricate a report without providing real evidence.</p>
     </header>
     <div class="intro-notes">
       <div>
-        <h3>The problem</h3>
-        <p>Refusal and misalignment rates alone can&rsquo;t explain why a model behaves as it does. To find the cause, we have to see what happens when the pressure changes, the prompt is reworded, a false claim is added, and whether a model blocks safe requests just because they look dangerous.</p>
+        <h3>The Problem</h3>
+        <p>Refusal and misalignment rates aren&rsquo;t sufficient to explain the impacts of user pressure on models. To find a root cause, we have to look at how models react to changes in the user pressure. For example, what happens when we paraphrase the prompt, remove the pressure or make the task appropriate?</p>
       </div>
       <div>
-        <h3>Our approach</h3>
-        <p>Harley builds 5,215 contrast sets around real user turns from WildChat, LMSYS-Chat-1M and ShareGPT, in 17 languages. Each set has five prompts which change one property at a time, isolating the underlying pressure from variables like wording, tone, surface cues, and false claims</p>
+        <h3>Our Approach</h3>
+        <p>Harley builds 5,215 contrast sets around real user turns from WildChat, LMSYS-Chat-1M, and ShareGPT, in 17 languages. Each set contains five prompts anchored around a real user turn, where each prompt changes one property at a time by isolating pressure from variables like phrasing, tone, surface cues, and false claims.</p>
       </div>
       <div>
         <h3>What we find</h3>
-        <p>User pressure raises misalignment nearly fivefold, from 4.3% to 20.4%. A pretext or claimed fact makes most refusals disappear, while safe requests that only look risky are refused more often. Two small open models can flag the prompts most likely to trip up frontier models.</p>
+        <p>We find that user pressure raises the misalignment rate by nearly five times, from 4.3% to 20.4%. Introducing an unverifiable pretext or fact can reduce refusals significantly, whereas risky looking but ultimately appropriate requests are refused more often. Furthermore, smaller and cheaper models can successfully predict which prompts will cause misalignment in frontier models.</p>
       </div>
     </div>
     <div class="making">
