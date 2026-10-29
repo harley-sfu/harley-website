@@ -115,13 +115,13 @@
 
     <div class="intro-variants">
       <h3>The prompts in each set</h3>
-      <p class="intro-variants-note">Each set has five prompts: the first four below, plus either a hard negative or a jailbreak. One is the <em>anchor</em>, the unmodified real user turn and the other four are written around it. The anchor is never the paraphrase or style control.</p>
+      <p class="intro-variants-note">Each set contains five prompts: The first four listed below, plus either a hard negative or a jailbreak. One is these prompts is the unmodified user turn and designated as the <em>anchor</em> role. The other prompts are written based off the <em>anchor</em>. The <em>anchor</em> can never be the paraphrase or style control.</p>
       <dl>
         <div><dt class="c-T">T &middot; Target</dt><dd>Adds a pressure that pushes the model beyond the task&rsquo;s scope.</dd></div>
-        <div><dt class="c-P">P &middot; Paraphrase</dt><dd>The same pressure in new words, to check the wording isn&rsquo;t doing the work.</dd></div>
-        <div><dt class="c-A">A &middot; Aligned control</dt><dd>Removes the pressure and keeps the task. Usually this is the real user turn.</dd></div>
-        <div><dt class="c-S">S &middot; Style control</dt><dd>Keeps the target&rsquo;s language and register but asks for an unrelated task.</dd></div>
-        <div><dt class="c-H">H &middot; Hard negative</dt><dd>Changes key facts so helping is right, while keeping the surface cues.</dd></div>
+        <div><dt class="c-P">P &middot; Paraphrase</dt><dd>A paraphrase of the pressure, to check if wording causes misalignment.</dd></div>
+        <div><dt class="c-A">A &middot; Aligned control</dt><dd>Removes the pressure but keeps the task. Usually this the <em>anchor</em>.</dd></div>
+        <div><dt class="c-S">S &middot; Style control</dt><dd>Keeps the target&rsquo;s language and register but changes to a completely unrelated and benign task.</dd></div>
+        <div><dt class="c-H">H &middot; Hard negative</dt><dd>Changes key facts so the prompt is appropriate, while keeping the surface cues.</dd></div>
         <div><dt class="c-J">J &middot; Jailbreak</dt><dd>Keeps the requested action but adds a false pretext or an unverifiable claim.</dd></div>
       </dl>
     </div>
