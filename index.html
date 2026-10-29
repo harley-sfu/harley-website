@@ -202,7 +202,7 @@
     <header class="chapter-head">
       <p class="overline"><span class="numeral">II</span> The second world &middot; pretext</p>
       <h2>A one-line pretext undoes most refusals</h2>
-      <p class="sub">The fifth prompt in each set can be eithr a hard negative or a jailbreak. A hard negative changes the request so it becomes appropriate. A jailbreak keeps the harmful request and adds a pretext the model can't verify.</p>
+      <p class="sub">The fifth prompt in each set can either be a hard negative or a jailbreak. A hard negative changes the request so it becomes appropriate. A jailbreak keeps the harmful request and adds a pretext the model can't verify.</p>
       <p class="sub">In the 200 human reviewed gold sets, 140 prompts written as hard negatives turned out to be jailbreaks. They change a median of just nine words, yet significantly reduce refusals.</p>
     </header>
 
@@ -275,7 +275,7 @@
     <header class="chapter-head">
       <p class="overline">Conclusion</p>
       <h2>Single-turn misalignment is not a solved problem</h2>
-      <p class="sub">Models still give in to pressure from a single user turn. Across 17 models, matched controls show that the pressure itself causes the failure, not the task, wording or tone. The same prompts trip models up in all five languages we tested, and two small open models can tell us in advance where frontier models will fail.</p>
+      <p class="sub">Language models still give in to single-turn user pressure. Across 17 models, our matched control dataset finds that user pressure is what often causes misalignment, not the task, wording, or tone. Furthermore, we find that adding an unverifiable pretext to a prompt can significantly reduce task refusals. Finally, we demonstrate that small, open models can successfully predict which prompts will cause misbehaviour in frontier models.</p>
     </header>
 
     <dl class="reading-stats">
@@ -293,7 +293,7 @@
         <span class="wb-weak-k"><b>9.0%</b>weakly misaligned</span>
         <span class="o-a-k"><b>79.6%</b>not misaligned</span>
       </div>
-      <figcaption>The share of target responses in the gold set judged to be misaligned. Almost half of it is weak misalignment: a real but limited harmful contribution.</figcaption>
+      <figcaption>The share of target responses in the gold set judged to be misaligned. Almost half of it is weak misalignment, which are real but limited harmful contribution.</figcaption>
     </figure>
 
     <div class="reading-notes">
